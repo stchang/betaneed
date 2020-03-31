@@ -1,0 +1,296 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+\usepackage{pfsteps}
+
+\begin{document}
+
+\subsubsection*{Syntax}
+\begin{align*}
+  \tag{Expressions}
+  \e   &= x \mid \lxe \mid \ap{\e}{\e} \\
+  \tag{Values}
+  \val &= \lxe \\
+  \tag{Answers}
+  \ans &= \Av \\
+  \tag{Answer Contexts}
+  \A   &= \hole \mid \app{\lx{\A}}{\e} \\
+  \tag{Evaluation Contexts}
+  \E   &= \hole \mid \ap{\E}{\e} \mid \app{\lxEx}{\E} \mid \app{\lx{\E}}{\e}
+\end{align*}
+
+\subsubsection*{Notions of Reduction}
+\begin{align*}
+\nr{ \app{\lxEx}{\val} }
+   { \betaneednr }
+   { \substx{\Ex}{\val} } \\
+\nr{ \app{\lxAv}{\ap{\e}{\e'}} }
+   { \assocLnr }
+   { \app{\lx{\inA{\ap{\val}{\e'}}}}{\e} } \\
+\nr{ \appp{\lxEx}{\app{\lm{y}{\Av}}{\e}} }
+   { \assocRnr }
+   { \app{\lm{y}{\inA{\app{\lxEx}{\val}}}}{\e} }
+\end{align*}
+
+\begin{align*}
+\need  &= \betaneednr \cup \assocLnr \cup \assocRnr \\
+\step  &: \textrm{compatible closure of} \need \\
+\steps &: \textrm{reflexive, transitive closure of } \step \\
+\pstep &: \textrm{parallel extension of } \step \\
+\srstep &: \textrm{standard reduction relation} \\
+&\inE{\e} \srstep \inE{\e'} \textrm{ if } \e \need \e' \\
+\srsteps &: \textrm{reflexive, transitive closure of } \srstep
+\end{align*}
+
+\begin{definition}[$\pstep$]
+Parallel reduction of all non-overlapping redexes.
+
+\begin{tabular}{rcllc}
+\psteprulenoif
+  { \e }{ \e }
+\psteprule
+  { \app{\lxEx}{\val} }{ \substx{\Ex[']}{\val'} }
+  { \Ex \pstep \Ex['],\; \val \pstep \val' }
+\psteprule
+  { \ap{\app{\lxAv}{\e_1}}{\e_2} }
+  { \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'} }
+  { \Av \pstep \inA[']{\val'},\; \e_1 \pstep \e_1',\; \e_2 \pstep \e_2' }
+\psteprule
+  { \appp{\lxEx}{\app{\lyAv}{\e}} }
+  { \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e'} }
+  { \Ex \pstep \Ex['],\; \Av \pstep \inA[']{\val'},\;  \e \pstep \e' }
+\psteprule
+  { \ap{\e_1}{\e_2} }{ \ap{\e_1'}{\e_2'} }
+  { \e_1 \pstep \e_1',\; \e_2 \pstep \e_2' }
+\psteprule
+  { \lxe }{ \lxe' }
+  { \e \pstep \e' }
+\end{tabular}
+\end{definition}
+
+
+\begin{definition}[$\srseqop$]
+Standard reduction sequences $\srseqset$
+\begin{itemize}
+\item $x \subset \srseqset$
+\item If $\srseqe{m}$, then $\srseq{\lxe_1}{\lxe_m}$
+\item If $\srseqe{m}$ and $\srseqe[']{n}$
+      then $\srseqappend{(\ap{\e_1}{\e_1'})}{(\ap{\e_m}{\e_1'})}
+            \srseq{(\ap{\e_m}{\e_2'})}{(\ap{\e_m}{\e_n'})}$
+\item If $\srseqe{m}$ and $\e_0 \srstep \e_1$, then $\e_0 \srseqop \srseqe{m}$
+\end{itemize}
+\end{definition}
+
+\begin{definition}[size function $\size{\cdot}$]
+\begin{align*}
+  \size{\e \pstep \e} &= 0 \\
+  \size{\app{\lxe}{\val} \pstep \substx{\e'}{\val'}} 
+    &= \size{\e \pstep \e'} + 
+             \numfv{x}{\e'} \times \size{\val \pstep \val'} + 1 \\
+  \size{\ap{\app{\lxAv}{\e_1}}{\e_2} \pstep 
+        \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'}}
+    &= \size{\Av \pstep \inA[']{\val'}} + 
+       \size{\e_1 \pstep \e_1'} + \size{\e_2 \pstep \e_2'} + 1 \\
+  \size{\appp{\lxEx}{\app{\lyAv}{\e}} \pstep 
+        \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e'}}
+    &= \size{\Av \pstep \inA[']{\val'}} + 
+       \size{\Ex \pstep \Ex[']} + \size{\e \pstep \e'} + 1 \\
+  \size{\apppp{e_1}{e_2} \pstep \apppp{\e_1'}{\e_2'}}
+    &= \size{\e_1 \pstep \e_1'} + \size{\e_2 \pstep \e_2'} \\
+  \size{\lxe \pstep \lxe'} &= \size{\e \pstep \e'}
+\end{align*}
+\end{definition}
+
+
+
+
+
+
+
+
+
+\begin{theorem}[Curry-Feys Standardization]
+$\e \steps \e'$ iff $\srseqe{n}$ s.t. $\e = \e_1$ and $\e' = \e_n$.
+\end{theorem}
+
+\begin{proof}
+Use lemma~\ref{lem:pstepsr}
+\end{proof}
+
+\begin{lemma}
+\label{lem:pstepsr}
+If $\e \pstep \e'$ and $\e' \srseqop \srseqe[']{n}$, $\exists \srseqconse[_1]
+\srseq{\e_2}{\e_p}$ s.t. $\e_1 = \e$ and $\e_p = \e_n'$.
+\end{lemma}
+
+\begin{proof}
+By triple lexicographic induction on 1) length $n$ of given standard reduction
+sequence, 2) $\size{\e \pstep \e'}$, and 3) structure of $\e$. Proceed by case
+analysis on last step in derivation of $\e \pstep \e'$
+\begin{byCases}
+  %
+  % pstep def #1
+  \case[(base)]{\e = \e'} Then $\e_1 = \e = \e'$ and $\e_p = \e_n'$
+  %
+  % pstep def #2
+  \case{\e \pstep \e' \textrm{ by } \pstep def(2)}
+  $\e = \app{\lxEx}{\val}$, $\e' = \substx{\Ex[']}{\val'}$, 
+  $\Ex \pstep \Ex[']$, $\val \pstep \val'$ \\
+  Let $\e_3 = \substx{\Ex}{\val}$. Then $\e \srstep \e_3$. \\
+  Since $\e_3 \pstep \e'$ (by subst lemma)
+  and $\size{\e_3 \pstep \e'} < \size{\e \pstep \e'}$
+  (by lemma~\ref{lem:size}), \\
+  then by IH $\exists \srseq{\e_4}{e_p}$  
+        s.t. $\e_4 = \e_3$ and $\e_p = \e_n'$. \\
+  Thus $\srseqconse \srseq{\e_4}{\e_p}$ is the required sr sequence.
+  %
+  %pstep def #3
+  \case{\e \pstep \e' \textrm{ by } \pstep def(3)}
+  $\e = \ap{\app{\lxAv}{\e_3}}{\e_4}$, 
+  $\e' = \app{\lx{\inA[']{\ap{\val'}{\e_4'}}}}{\e_3'}$,
+  $\Av \pstep \inA[']{\val'}$, $\e_3 \pstep \e_3'$, $\e_4 \pstep \e_4'$ \\
+  Let $e_5 = \app{\lx{\inA{\ap{\val}{\e_4}}}}{\e_3}$. Then $\e \srstep \e_5$. \\
+  Since $\e_5 \pstep \e'$ (by $\pstep def(5)$)
+  and $\size{\e_5 \pstep \e'} < \size{\e \pstep \e'}$
+  (by lemma~\ref{lem:size}), \\
+  then by IH, $\exists \srseq{\e_6}{\e_p}$ 
+       s.t. $\e_6 = \e_5$ and $\e_p = \e_n'$. \\
+  Thus $\srseqconse \srseq{\e_6}{\e_p}$ is the required sr sequence.
+  %
+  %pstep def #4
+  \case{\e \pstep \e' \textrm{ by } \pstep def(4)}
+  $\e = \appp{\lxEx}{\app{\lm{y}{\Av}}{\e_3}}$, 
+  $\e' = \app{\lm{y}{\inA[']{\app{\lxEx[']}{\val'}}}}{\e_3'}$,
+  $\Ex \pstep \Ex[']$, $\Av \pstep \inA[']{\val'}$, $\e_3 \pstep \e_3'$ \\
+  Let $e_4 = \app{\lm{y}{\inA{\app{\lxEx}{\val}}}}{\e_3}$. 
+  Then $\e \srstep \e_4$. \\
+  Since $\e_4 \pstep \e'$ (by $\pstep def(5)$)
+  and $\size{\e_4 \pstep \e'} < \size{\e \pstep \e'}$
+  (by lemma~\ref{lem:size}), \\
+  then by IH, $\exists \srseq{\e_5}{\e_p}$ 
+       s.t. $\e_4 = \e_3$ and $\e_p = \e_n'$. \\
+  Thus $\srseqconse \srseq{\e_5}{\e_p}$ is the required sr sequence.
+  %
+  %pstep def #5
+  \case{\e \pstep \e' \textrm{ by } \pstep def(5)}
+  $e = \ap{e_3}{e_4}$, $e' = \ap{e_3'}{e_4'}$, 
+  $e_3 \pstep e_3'$, $e_4 \pstep e_4'$
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    \case{\e_1 \srseqop \e_2 = \e_1 \srstep \e_2}
+    \case{otherwise}
+  \end{byCases}
+  Both subcases follow same reasoning as text.
+  %
+  %pstep def #6
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e \pstep \e' \textrm{ by } \pstep def(6)}
+  Claim holds by IH.
+\end{byCases}
+\end{proof}
+
+
+\newcommand{\eone}{\e^{*}}
+\newcommand{\etwo}{\e^{**}}
+\newcommand{\ethree}{\e^{***}}
+
+\begin{lemma}
+\label{lem:srstep}
+If $\e \pstep \eone \srstep \etwo$, then $\exists \ethree$ s.t. $\e \srsteps
+\ethree \pstep \etwo$.
+\end{lemma}
+
+\begin{proof}
+By double lexicographic induction on $\size{\e \pstep \eone}$ and structure of
+$\e$.
+\begin{byCases}
+  \case{\e = \eone} $\ethree = \etwo$
+  \case{\e = \app{\lxEx}{\val}, \eone = \substx{\Ex[']}{\val'},
+        \Ex \pstep \Ex['], \val \pstep \val'}
+  \case{\e = \ap{\app{\lxAv}{\e_1}}{\e_2}, 
+        \eone = \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'},
+        \Av \pstep \inA[']{\val'}, \e_1 \pstep \e_1', \e_2 \pstep \e_2'}
+  \case{\e =  \appp{\lxEx}{\app{\lyAv}{\e_1}},
+        \eone = \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e_1'},
+        \Ex \pstep \Ex['], \Av \pstep \inA[']{\val'},  \e_1 \pstep \e_1'}
+  Each of these cases follows from IH on size and lemma~\ref{lem:size}.
+  \case{\e = \ap{\e_1}{\e_2}, \eone = \ap{\e_1'}{\e_2'}, 
+        \e_1 \pstep \e_1', \e_2 \pstep \e_2'}
+  Subcases of $\eone \srstep \etwo$:
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    \case{\e_1' = \lxEx, \e_2' = \val, \etwo = \substx{\Ex}{\val}}
+    \case{\e_1' = \app{\lxAv}{\e_3}, \e_2' = \e_4,
+          \etwo = \app{\lx{\inA{\ap{v}{\e_4}}}}{\e_3}}
+    \case{\e_1' = \lxEx, \e_2' = \app{\lyAv}{\e_3}, 
+          \etwo = \app{\ly{\inA{\ap{\lxEx}{\val}}}}{\e_3}}
+    Each of these cases follows from IH on subterms and
+    lemma~\ref{lem:srstepans}
+    \case{\eone = \ap{\inE{\e_3}}{\e_2'}, \etwo = \ap{\inE{\e_3'}}{\e_2'},
+          \e_3 \need \e_3'}
+    \case{\eone = \ap{\e_1'}{\inE{\e_3}}, \etwo = \ap{\e_1'}{\inE{\e_3'}},
+          \e_3 \need \e_2'}
+    Each of these cases follows by IH on subterms.
+  \end{byCases}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e = \lxe_1, \eone = \lxe_1'} Impossible bc SR undefined for values.
+\end{byCases}
+\end{proof}
+
+
+
+
+
+
+\begin{lemma}
+\label{lem:srstepans}$\;$
+\begin{enumerate}
+\item If $\e \pstep \lxEx$, $\exists \lxEx[']$ s.t. $\e \srsteps \lxEx[']
+  \pstep \lxEx$.
+\item If $\e \pstep \ans$, $\exists \ans'$ s.t. $\e \srsteps \ans' \pstep
+  \ans$.
+\item If $\e \pstep x$, then $\e \srsteps x$.
+\end{enumerate}
+\end{lemma}
+
+
+
+
+
+\begin{lemma}[Size]
+\label{lem:size}
+If $s_{\Ex} = \size{\Ex \pstep \Ex[']}$, $s_\val = \size{\val \pstep \val'}$,
+$s_{\Av} = \size{\Av \pstep \inA[']{\val'}}$, $s_{\e_1} = \size{\e_1 \pstep
+  \e_1'}$, $s_{\e_2} = \size{\e_2 \pstep \e_2'}$ 
+then:
+\begin{enumerate}
+\item $\substx{\Ex}{\val} \pstep \substx{\Ex[']}{\val'}$
+\item $\size{\substx{\Ex}{\val} \pstep \substx{\Ex[']}{\val'}} 
+         \leq 
+       s_{\Ex} + \numfvx{\Ex[']} \times s_\val$
+\item $\app{\lx{\inA{\ap{\val}{\e_2}}}}{\e_1} 
+        \pstep 
+       \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'}$
+\item $\size{\app{\lx{\inA{\ap{\val}{\e_2}}}}{\e_1} 
+               \pstep 
+             \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'}}
+         \leq
+         s_{\Av} + s_{\e_1} + s_{\e_2}$
+\item $\app{\ly{\inA{\app{\lxEx}{\val}}}}{\e_1}
+         \pstep
+       \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e_1'}$
+\item $\size{\app{\ly{\inA{\app{\lxEx}{\val}}}}{\e_1}
+              \pstep
+            \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e_1'}}
+       \leq
+       s_{\Av} + s_{\Ex} + s_{\e_1}$
+\end{enumerate}
+\end{lemma}
+
+
+
+
+\end{document}

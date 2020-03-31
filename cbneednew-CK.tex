@@ -1,0 +1,173 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+
+\begin{document}
+
+\subsubsection*{Syntax}
+\begin{align*}
+  \tag{Expressions}
+  \e   &= x \mid \lxe \mid \ap{\e}{\e} \\
+  \tag{Stepper Expressions}
+  \stepe &= \e \mid \labxe \\
+  \tag{Values}
+  \val &= \lxe \\
+  \tag{Answers}
+  \ans &= \Av \\
+  \tag{Answer Contexts}
+  \A   &= \hole \mid \ap{\inA{\lx\A}}{\e} \\
+  \tag{Answer Contexts -- outer}
+  \Ap  &= \hole \mid \ap{\inA{\Ap}}{\e} \\
+  \tag{Answer Contexts -- inner}
+  \Am  &= \hole \mid \inA{\lx\Am} \\
+  \tag{Evaluation Contexts} 
+  \E   &= \hole \mid \ap{\E}{\e} \mid \inA{\E}
+  \mid \inAp{\ap{\inA{\lx\inAm{\inE{x}}}}{\E}} \\
+  & \hspace{2.9cm} \inAp{\Am} \in \A \\
+  \tag{Contexts}
+  \C  &= \hole \mid \lx\C \mid \ap{\C}{\e} \mid \ap{\e}{\C} \\
+  %
+  \tag{Frames}
+  \F   &= \mt \mid \argFe \mid \lxF \mid \bodyFx{\Fss}{\Fss} \\
+  \tag{Machine States}
+  \St  &= \ckeFs
+\end{align*}
+
+\subsubsection*{Machine Transitions}
+\begin{align*}
+  %
+  % push-arg
+  \tag*{\textit{push-arg}} \\
+  \ckFs{\ap{\e_1}{\e_2}} &\ckstep \cke[_1]{\consFss{\argFe[_2]}} \\
+  %
+  % push-lam
+  \tag*{\textit{push-lam}} \\
+  \ckFs{\lxe} &\ckstep \cke{\consFss{\lxF}} \\
+  \textrm{more args than }\lambda\textrm{s in } \Fss \\
+  %
+  % lookup-var
+  \tag*{\textit{lookup-var}} \\
+  \ck{x}{\appendFss{\Fs[_1]}
+                   {\appendFs{\consFs[_2]{\lxF}}
+                             {\consFs[_3]{\argFe}}}}
+    &\ckstep
+  \cke{\consFss[_3]{\bodyFx{\Fss[_1]}{\Fss[_2]}}} \\
+  \lxF \notin \Fs[_1] \\
+  \buildF{\Fss[_1]} \in \inAm{\E} \\
+  \buildF{\Fss[_2]} \in \A \\
+  \buildF{\Fss[_3]} \in \inE{\Ap} \\
+  \inAp{\Am} \in A \\
+  %
+  % \betaneed
+  \tag*{$\betaneednr$} \\
+  \ck{\val}{\appendFss{\Fs[_1]}
+                   {\consFs[_2]{\bodyFx{\Fss[_3]}{\Fss[_4]}}}}
+    &\ckstep
+  \ck{\val}{\appendFss{\Fs[\substx{_3}{\val}]}
+                      {\Fs[_1],\Fs[_4],\Fs[_2]}} \\
+  \buildF{\Fss[_1]} \in \A
+\end{align*}
+
+\begin{align*}
+  \phi : \St &\rightarrow \e \\
+  \build{\ckeFs} &= \inhole{\buildF{\Fss}}{\e} \\ \\
+  %
+  %
+  \phi_F : \Fss &\rightarrow \E \\
+  \buildF{\Fss} &= \buildFhelp{\Fss}{\hole} \\ \\
+  %
+  \phi' : \Fss \times \C &\rightarrow \E \\
+  \buildFhelp{\mkFlst{\mt}}{\C} &= \C \\
+  \buildFhelpLHS{\lxF} &= \buildFhelpRHS{\lx\C} \\
+  \buildFhelpLHS{\argFe} &= \buildFhelpRHS{\ap{\C}{\e}} \\
+  \buildFhelpLHS{\bodyFx{\Fss[_1]}{\Fss[_2]}} &= 
+  \buildFhelpRHS{\ap{\inhole{\buildF{\Fss[_2]}}
+                            {\lx\inhole{\buildF{\Fss[_1]}}
+                                       {x}}}
+                    {\C}} \\ \\
+  %
+  %
+  \psi : \St &\rightarrow \stepe \\
+  \buildtostep{\ckeFs} &= \buildtostepp{\Fss}{\e} \\ \\
+  %
+  \psi' : \Fss \times \stepe &\rightarrow \stepe \\
+  \buildtostepp{\mkFlst{\mt}}{\stepe} &= \stepe \\
+  \buildtostepp{\appendFss{\consFs[_1]{\lxF}}
+                          {\consFs[_2]{\argF{\stepe_1}}}}
+               {\stepe}
+     &=
+  \buildtostepp{\appendFss{\Fs[_1]}{\Fs[_2]}}
+               {\substx{\stepe}{\labx{\stepe_1}}} \\
+    \buildF{\Fss[_1]} \in \A \\
+  \buildtostepp{\consFss{\argF{\stepe_1}}}{\stepe}
+    &=
+  \buildtostepp{\Fss}{\ap{\stepe}{\stepe_1}} \\
+  \buildtostepp{\consFss{\bodyFx{\Fss[_1]}{\Fss[_2]}}}{\stepe}
+    &=
+  \buildtostepp{\appendFss{\Fs[_1]}
+                          {\appendFs{\consFs[_2]{\lxF}}
+                                    {\consFs{\argF{\stepe}}}}}
+               {x}
+\end{align*}
+
+
+
+
+\newpage
+
+
+\begin{theorem}
+For a program $\e$, if $\ck{\e}{\mtFss} \cksteps \ck{\val}{\Fss}$, then for all
+steps $\St_1 \ckstep \St_2$ in the sequence, either:
+\begin{enumerate}
+  \item $\build{\St_1} = \build{\St_2}$, or
+  \item $\build{\St_1} \srstep \build{\St_2}$
+\end{enumerate}
+
+\end{theorem}
+
+\begin{proof}
+By cases on $\St_1 \ckstep \St_2$:
+\begin{byCases}
+  \case{\textit{push-arg}}
+  first claim
+  \case{\textit{push-lam}}
+  first claim
+  \case{\textit{lookup-var}}
+  first claim
+  \case{\betaneednr}
+  second claim
+\end{byCases}
+\end{proof}
+
+
+
+
+\begin{theorem}
+For a program $\e$, if $\ck{\e}{\mtFss} \cksteps \ck{\val}{\Fss}$, then for all
+steps $\St_1 \ckstep \St_2$ in the sequence, either:
+\begin{enumerate}
+  \item $\buildtostep{\St_1} = \buildtostep{\St_2}$, or
+  \item $\buildtostep{\St_1} \longmapsto_{stepper} \buildtostep{\St_2}$
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+By cases on $\St_1 \ckstep \St_2$:
+\begin{byCases}
+  \case{\textit{push-arg}}
+  first claim
+  \case{\textit{push-lam}}
+  second claim
+  \case{\textit{lookup-var}}
+  first claim
+  \case{\betaneednr}
+  first claim
+\end{byCases}
+\end{proof}
+
+
+\end{document}

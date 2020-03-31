@@ -1,0 +1,303 @@
+\documentclass[11pt]{article}
+\oddsidemargin  0.0in
+\evensidemargin 0.0in
+\textwidth      7.0in
+\headheight    -1.0in
+\topmargin      0.0in
+\textheight     10.0in
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+%\usepackage{fullpage}
+\usepackage{betaneed}
+\usepackage{tikz}
+\usepackage{multicol}
+
+
+\begin{document}
+
+\title{\normalsize
+%\begin{minipage}[b]{0.5\linewidth}
+\begin{align*}
+\inC[_1]{\ap{\inA[_1]{\lx\inC[_2]{\Ex}}}{\Av[_2]}}
+\;\;\betaneednr&\;\;
+\inC[_1]{\inA[_1]{\inA[_2]{\substx{\inC[_2]{\Ex}}{\val}}}} \\
+\inC[_1]{\C_2} \in& \A \\
+\end{align*}
+%\end{minipage}
+%\begin{minipage}[b]{0.5\linewidth}
+\small
+\begin{itemize}
+\item  $\C_1 =$ around everything
+\item  $\A_1 =$ around the $\lx$, but not the $\Av[_2]$
+\item  $\C_2 =$ under the $\lx$, around the $\Ex$
+\end{itemize}
+%\end{minipage}
+}
+\date{}
+\author{}
+\maketitle
+
+\begin{multicols}{3}
+
+\subsubsection*{Example 1 (AF style)}
+\begin{tikzpicture}
+\draw[scale=\tkzsc] (0,3) -- (1,3) -- (1,2) -- (2,2) -- (2,1) -- (3,1) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (0,3) -- (1,2) -- (2,1) -- (3,0);
+\filldraw[scale=\tkzsc,black]
+(0,3) circle (1mm)
+(1,3) circle (1mm)
+(1,2) circle (1mm)
+(2,2) circle (1mm)
+(2,1) circle (1mm)
+(3,1) circle (1mm)
+(3,0) circle (1mm);
+\draw[scale=\tkzsc]
+(0,3) node [anchor=south] {$\val_x$}
+(1,3) node [anchor=south] {$\val_y$}
+(2,3) node [anchor=south] {$\val_z$}
+(3,2) node [anchor=west] {$\lx$}
+(3,1) node [anchor=west] {$\ly$}
+(3,0) node [anchor=west] {$\lz$};
+\end{tikzpicture}
+\begin{enumerate}
+\item 
+$\app{\underline{\lx}\app{\ly\app{\lz{x}}{\val_z}}{\val_y}}
+     {\underline{\val_x}}$ \\
+$\Av[_2] = \val_x$ \\
+$\C_1 = \A_1 = \hole$ \\
+$\inhole{\C_2}{\E} = \app{\ly\app{\lz{\hole}}{\e_z}}{\e_y}$
+\item 
+$\app{\lx\app{\underline{\ly}\app{\lz{y}}{\val_z}}
+             {\underline{\val_y}}}{\val_x}$ \\
+$\Av[_2] = \val_y$ \\
+$\C_1 = \app{\lx\hole}{\val_x}$ \\
+$\A_1 = \hole$ \\
+$\inhole{\C_2}{\E} = \app{\lz{\hole}}{\e_z}$
+\item 
+$\app{\lx\app{\ly\app{\underline{\lz}{z}}
+                     {\underline{\val_z}}}{\val_y}}{\val_x}$ \\
+$\Av[_2] = \val_z$ \\
+$\C_1 = \app{\lx\app{\ly{\hole}}{\e_y}}{\e_x}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \E = \hole$
+\end{enumerate}
+
+
+
+
+\columnbreak
+
+
+
+
+\subsubsection*{Example 2 (anti-AF style)}
+\begin{tikzpicture}
+\draw[scale=\tkzsc] (0,3) -- (1,3) -- (2,3) -- (3,3) -- (3,2) -- (3,1) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (0,3) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (1,3) -- (3,1);
+\draw[scale=\tkzsc,dotted,thick] (2,3) -- (3,2);
+\filldraw[scale=\tkzsc,black]
+(0,3) circle (1mm)
+(1,3) circle (1mm)
+(2,3) circle (1mm)
+(3,3) circle (1mm)
+(3,2) circle (1mm)
+(3,1) circle (1mm)
+(3,0) circle (1mm);
+\draw[scale=\tkzsc]
+(0,3) node [anchor=south] {$\val_z$}
+(1,3) node [anchor=south] {$\val_y$}
+(2,3) node [anchor=south] {$\val_x$}
+(3,2) node [anchor=west] {$\lx$}
+(3,1) node [anchor=west] {$\ly$}
+(3,0) node [anchor=west] {$\lz$};
+\end{tikzpicture}
+\begin{enumerate}
+\item 
+%% $\app{ \lx\ly\lz{x} }
+%%      { \val_x \, \val_y \, \val_z }$ \\
+$\app{ \underline{\lx}\ly\lz{x} }
+     { \underline{\val_x} \, \val_y \, \val_z }$ \\
+$\Av[_2] = \val_x$ \\
+$\C_1 = \ap{\hole}{\ap{\val_y}{\val_z}}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \ly\lz\hole$ \\
+$\E = \hole$
+\item 
+$\app{ \lx\underline{\ly}\lz{y} }
+     { \val_x \, \underline{\val_y} \, \val_z }$ \\
+$\Av[_2] = \val_y$ \\
+$\C_1 = \ap{\hole}{\val_z}$ \\
+$\A_1 = \ap{\lx\hole}{\val_x}$ \\
+$\C_2 = \lz\hole$ \\
+$\E = \hole$
+\item
+$\app{ \lx\ly\underline{\lz}{z} }
+     { \val_x \, \val_y \, \underline{\val_z} }$ \\
+$\Av[_2] = \val_z$ \\
+$\C_1 = \hole$ \\
+$\A_1 = \app{\lx\ly\hole}{\ap{\val_x}{\val_y}}$ \\
+$\C_2 = E = \hole$ 
+\end{enumerate}
+
+
+
+\columnbreak
+
+
+
+
+
+\subsubsection*{Example 3 (via Casey)}
+\begin{tikzpicture}
+\draw[scale=\tkzsc] (0,3) -- (1,3) -- (2,3) -- (2,2) -- (3,2) -- (3,1) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (0,3) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (1,3) -- (3,1);
+\filldraw[scale=\tkzsc,black]
+(0,3) circle (1mm)
+(1,3) circle (1mm)
+(2,3) circle (1mm)
+(2,2) circle (1mm)
+(3,2) circle (1mm)
+(3,1) circle (1mm)
+(3,0) circle (1mm);
+\draw[scale=\tkzsc]
+(0,3) node [anchor=south] {$\val_z$}
+(1,3) node [anchor=south] {$\val_x$}
+(2,3) node [anchor=south] {$\val_y$}
+(3,2) node [anchor=west] {$\lx$}
+(3,1) node [anchor=west] {$\ly$}
+(3,0) node [anchor=west] {$\lz$};
+\end{tikzpicture}
+\begin{enumerate}
+\item 
+%% $\app{\lx\app{\ly\lz\hole}{\val_y}}{\ap{\val_x}{\val_z}}$
+$\app{\underline{\lx}\app{\ly\lz x}{\val_y}}
+     {\ap{\underline{\val_x}}{\val_z}}$ \\
+$\Av[_2] = \val_x$ \\
+$\C_1 = \ap{\hole}{\val_z}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \app{\ly\lz\hole}{\val_y}$ \\
+$\E = \hole$
+\item
+$\app{\lx\app{\underline{\ly}\lz y}
+             {\underline{\val_y}}}{\ap{\val_x}{\val_z}}$ \\
+$\Av[_2] = \val_y$ \\
+$\C_1 = \app{\lx\hole}{\ap{\val_x}{\val_z}}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \lz\hole$ \\
+$\E = \hole$
+\item
+$\app{\lx\app{\ly\underline{\lz} z}{\val_y}}
+     {\ap{\val_x}{\underline{\val_z}}}$ \\
+$\Av[_2] = \val_z$ \\
+$\C_1 = \hole$ \\
+$\A_1 = \app{\lx\app{\ly\hole}{\val_y}}{\val_x}$ \\
+$\C_2 = \E = \hole$ 
+\end{enumerate}
+
+\columnbreak
+
+
+\subsubsection*{Example 4 (compose 1 + 2)}
+\begin{tikzpicture}
+\draw[scale=\tkzsc] (0,3) -- (1,3) -- (1,2) -- (2,2) -- (3,2) -- (3,1) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (0,3) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (2,2) -- (3,1);
+\filldraw[scale=\tkzsc,black]
+(0,3) circle (1mm)
+(1,3) circle (1mm)
+(1,2) circle (1mm)
+(2,2) circle (1mm)
+(3,2) circle (1mm)
+(3,1) circle (1mm)
+(3,0) circle (1mm);
+\draw[scale=\tkzsc]
+(0,3) node [anchor=south] {$\val_x$}
+(1,3) node [anchor=south] {$\val_z$}
+(2,3) node [anchor=south] {$\val_y$}
+(3,2) node [anchor=west] {$\lx$}
+(3,1) node [anchor=west] {$\ly$}
+(3,0) node [anchor=west] {$\lz$};
+\end{tikzpicture}
+\begin{enumerate}
+%%$\app{\lx\app{\ly\lz\hole}{\ap{\val_y}{\val_z}}}{\val_x}$ \\
+\item
+$\app{\underline{\lx}\app{\ly\lz x}{\ap{\val_y}{\val_z}}}
+     {\underline{\val_x}}$ \\
+$\Av[_2] = \val_x$ \\
+$\C_1 = \hole$ \\
+$\A_1 = \hole$ \\
+$\inhole{\C_2}{\E} = \app{\ly\lz\hole}{\ap{\val_y}{\val_z}}$
+\item
+$\app{\lx\app{\underline{\ly}\lz y}
+             {\ap{\underline{\val_y}}{\val_z}}}{\val_x}$ \\
+$\Av[_2] = \val_y$ \\
+$\C_1 = \app{\lx\ap{\hole}{\val_z}}{\val_x}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \lz\hole$ \\
+$\E = \hole$
+\item 
+$\app{\lx\app{\ly\underline{\lz} z}
+             {\ap{\val_y}{\underline{\val_z}}}}{\val_x}$ \\
+$\Av[_2] = \val_z$ \\
+$\C_1 = \app{\lx\hole}{\val_x}$ \\
+$\A_1 = \app{\ly\hole}{\val_y}$ \\
+$\C_2 = \E = \hole$
+\end{enumerate}
+
+
+
+\columnbreak
+
+
+\subsubsection*{Example 5 (compose 2 + 1)}
+\begin{tikzpicture}
+\draw[scale=\tkzsc] (0,3) -- (1,3) -- (2,3) -- (2,2) -- (2,1) -- (3,1) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (0,3) -- (3,0);
+\draw[scale=\tkzsc,dotted,thick] (1,3) -- (2,2);
+\filldraw[scale=\tkzsc,black]
+(0,3) circle (1mm)
+(1,3) circle (1mm)
+(2,3) circle (1mm)
+(2,2) circle (1mm)
+(2,1) circle (1mm)
+(3,1) circle (1mm)
+(3,0) circle (1mm);
+\draw[scale=\tkzsc]
+(0,3) node [anchor=south] {$\val_y$}
+(1,3) node [anchor=south] {$\val_x$}
+(2,3) node [anchor=south] {$\val_z$}
+(3,2) node [anchor=west] {$\lx$}
+(3,1) node [anchor=west] {$\ly$}
+(3,0) node [anchor=west] {$\lz$};
+\end{tikzpicture}
+%%$\app{\lx\ly\app{\lz\hole}{\val_z}}{\ap{\val_x}{\val_y}}$
+\begin{enumerate}
+\item
+$\app{\underline{\lx}\ly\app{\lz x}{\val_z}}
+     {\ap{\underline{\val_x}}{\val_y}}$ \\
+$\Av[_2] = \val_x$ \\
+$\C_1 = \ap{\hole}{\val_y}$ \\
+$\A_1 = \hole$ \\
+$\inhole{\C_2}{\E} = \ly\app{\lz\hole}{\val_z}$ \\
+\item
+$\app{\lx\underline{\ly}\app{\lz y}{\val_z}}
+     {\ap{\val_x}{\underline{\val_y}}}$ \\
+$\Av[_2] = \val_y$ \\
+$\C_1 = \hole$ \\
+$\A_1 = \app{\lx\hole}{\val_x}$ \\
+$\inhole{\C_2}{\E} = \app{\lz\hole}{\val_z}$
+\item
+$\app{\lx\ly\app{\underline{\lz} z}
+                {\underline{\val_z}}}{\ap{\val_x}{\val_y}}$ \\
+$\Av[_2] = \val_z$ \\
+$\C_1 = \app{\lx\ly\hole}{\ap{\val_x}{\val_y}}$ \\
+$\A_1 = \hole$ \\
+$\C_2 = \E = \hole$
+\end{enumerate}
+
+\end{multicols}
+
+\end{document}

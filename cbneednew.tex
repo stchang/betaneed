@@ -1,0 +1,62 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+
+\begin{document}
+
+\subsubsection*{Syntax (AF)}
+\begin{align*}
+  \tag{Expressions}
+  \e   &= x \mid \lxe \mid \ap{\e}{\e} \\
+  \tag{Values}
+  \val &= \lxe \\
+  \tag{Answers}
+  \ans &= \Av \\
+  \tag{Answer Contexts}
+  \A   &= \hole \mid \app{\lx{\A}}{\e} \\
+  \tag{Evaluation Contexts}
+  \E   &= \hole \mid \ap{\E}{\e} \mid \app{\lx{\E}}{\e} \mid \app{\lxEx}{\E} 
+\end{align*}
+
+
+\subsubsection*{Notions of Reduction (AF)}
+\begin{align*}
+\nr{ \app{\lxEx}{\val} }
+   { \betaneednr }
+   { \substx{\Ex}{\val} } \\
+\nr{ \app{\lxAv}{\ap{\e}{\e'}} }
+   { \assocLnr }
+   { \app{\lx{\inA{\ap{\val}{\e'}}}}{\e} } \\
+\nr{ \appp{\lxEx}{\app{\lm{y}{\Av}}{\e}} }
+   { \assocRnr }
+   { \app{\lm{y}{\inA{\app{\lxEx}{\val}}}}{\e} }
+\end{align*}
+
+
+
+\subsubsection*{Syntax (new1)}
+\begin{align*}
+  \tag{Evaluation Contexts}
+  \E   &= \hole \mid \ap{\E}{\e} \mid \ap{\inA{\lx{\E}}}{\e}
+                \mid \ap{\inA{\lxEx}}{\E}
+\end{align*}
+
+
+\subsubsection*{Notions of Reduction (new1)}
+\begin{align*}
+\nr{ \ap{\inA[_1]{\lxEx}}{\inA[_2]{\val}} }
+   { \betaneednr }
+   { \inA[_1]{\inA[_2]{\substx{\Ex}{\val}}} } \\
+\nr{ \app{\lxAv}{\ap{\e}{\e'}} }
+   { \assocLnr }
+   { \app{\lx{\inA{\ap{\val}{\e'}}}}{\e} } \\
+v \neq \lyEy\;\;& \\
+\end{align*}
+
+
+\input{cbneednew-syntax}
+
+\end{document}

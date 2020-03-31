@@ -1,0 +1,28 @@
+\subsubsection*{Syntax (new2)}
+\begin{align*}
+  \tag{Expressions}
+  \e   &= x \mid \lxe \mid \ap{\e}{\e} \\
+  \tag{Values}
+  \val &= \lxe \\
+  \tag{Answers}
+  \ans &= \Av \\
+  \tag{Answer Contexts}
+  \A   &= \hole \mid \ap{\inA{\lx{\A}}}{\e} \\
+  \tag{Partial Answer Contexts -- outer}
+  \Ap &= \hole \mid \ap{\inA{\Ap}}{\e} \\
+  \tag{Partial Answer Contexts -- inner}
+  \Am &= \hole \mid \inA{\lx\Am} \\
+  \tag{Evaluation Contexts} 
+  \E   &= \hole \mid \ap{\E}{\e} \mid \inA{\E}
+          \mid \inAp{\ap{\inA{\lx\inAm{\inE{x}}}}{\E}} \\
+& \hspace{2.9cm} \inAp{\Am} \in \A
+\end{align*}
+
+
+\subsubsection*{Notions of Reduction (new2)}
+\begin{align*}
+\inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}
+\;\;\betaneednr&\;\;
+\inAp{\inA[_1]{\inA[_2]{\substx{\inAm{\Ex}}{\val}}}} \\
+\inAp{\Am} \in& \A 
+\end{align*}

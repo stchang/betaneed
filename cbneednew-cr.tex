@@ -1,0 +1,475 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+\usepackage{pfsteps}
+
+\begin{document}
+
+\input{cbneednew-syntax}
+%
+\begin{align*}
+\step&: \textrm{compatible closure of } \betaneednr \\
+\steps&: \textrm{reflexive, transitive closure of } \step \\
+\pstep&: \textrm{parallel reduction of } \betaneednr \textrm{ redexes}
+\end{align*}
+
+\input{cbneednew-parallel-red}
+
+
+
+%
+%
+% Context composition lemmas
+
+\subsection{Context Composition Lemmas}
+
+\begin{lemma}
+\label{lem:EE}
+%% If $\E_1 \pstep \E_1'$ and $\E_2 \pstep \E_2'$, then $\inE[_1]{\E_2} \pstep
+%% \inE[_1']{\E_2'}$, etc.
+If $\C_1 \pstep \C_1'$ and $\C_2 \pstep \C_2'$, then $\inC[_1]{\C_2} \pstep
+\inC[_1']{\C_2'}$.
+\end{lemma}
+
+\begin{proof}
+  By structural induction on $\C_1$.
+\end{proof}
+
+\begin{lemma}
+\label{lem:Ee}
+If $\C \pstep \C'$ and $\e \pstep \e'$, $\inC{\e} \pstep \inC[']{\e'}$
+\end{lemma}
+
+\begin{proof}
+  By structural induction on $\C$.
+\end{proof}
+
+
+
+%
+%
+% Diamond lemma
+
+\subsection{Diamond Lemma}
+
+\begin{lemma}[Diamond Property of $\pstep$]
+\label{lem:diamond}
+If $\e \pstep \e_1$ and $\e \pstep \e_2$, there exists $\e'$ s.t. $\e_1 \pstep
+\e'$ and $\e_2 \pstep \e'$.
+\end{lemma}
+
+\newcommand{\IH}[2][']{\ensuremath{#2 \!\!\pstep\!\! #2#1}}
+\begin{proof}
+By structural induction on proof of $\e \pstep \e_1$.
+\begin{byCases}
+  %
+  % pstep def #1
+  \case[(base)]{\e \pstep \e_1 \textrm{ by } \pstep def(1) 
+                                    \textrm{, so }\e = \e_1} 
+  Then $\e' = \e_2$ because $\e_1 = \e \pstep \e_2$ and $\e_2 \pstep \e_2$.
+  %
+  % pstep def #2
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(2)}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    %
+    % subcase 2
+    %
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(2)}
+    $\e   = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}$,\\
+    $\e_1 = \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}}$,
+    \;\;\;\;\IH{\Ap},\IH{\A_1},\IH{\A_2},\IH{\Am},\IH{\E},\IH{\val}\\
+    $\e_2 = \inAp['']{\inA[_1'']{\inA[_2'']{\substx{\inAm['']{\Ex['']}}
+                                                  {\val''}}}}$,
+    \;\IH['']{\Ap},\IH['']{\A_1},\IH['']{\A_2},\IH['']{\Am},\IH['']{\E},\IH['']{\val}\\
+    By IH, subterms satisfy diamond property. By lemma~\ref{lem:diamondC},
+    subcontexts satisfy diamond property.
+    So $\exists 
+        \e' = \inAp[''']{\inA[_1''']{\inA[_2''']{\substx{\inAm[''']{\Ex[''']}}
+                                                        {\val'''}}}}$ s.t.
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by composition lemmas and subst lemma
+      \item $\e_2 \pstep \e'$ by composition lemmas and subst lemma
+    \end{itemize}
+    %
+    % subcase 3
+    % 
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(3)}
+    $\e   = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}$,\\
+    $\e_1 = \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}}$,
+    \;\IH{\Ap},\IH{\A_1},\IH{\A_2},\IH{\Am},\IH{\E},\IH{\val}\\
+    $\e_2 = \inAp['']{\ap{\inA[_1'']{\lx\inAm['']{\Ex['']}}}
+                         {\inA[_2'']{\val''}}}$, 
+    \;\;\;\IH['']{\Ap},\IH['']{\A_1},\IH['']{\A_2},\IH['']{\Am},\IH['']{\E},\IH['']{\val}, 
+    by lemma~\ref{lem:diamondhelp1} \\
+    By IH, subterms satisfy diamond property. By lemma~\ref{lem:diamondC},
+    subcontexts satisfy diamond property.
+    So $\exists 
+        \e' = \inAp[''']{\inA[_1''']{\inA[_2''']{\substx{\inAm[''']{\Ex[''']}}
+                                                        {\val'''}}}}$ s.t.
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by composition lemmas and subst lemma
+      \item $\e_2 \pstep \e'$ by $\pstep\!def(2)$
+    \end{itemize}
+    %% \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubcase {#1}.}}
+    %% \begin{byCases}
+    %%   %
+    %%   % subsubcase: \Ap = \hole
+    %%   \case{\Ap = \hole}
+    %%   Then $\Am = \hole$\\
+    %% $\e   = \ap{\inA[_1]{\lx\Ex}}{\Av[_2]}$ \\
+    %% $\e_1 = \inA[_1']{\inA[_2']{\substx{\Ex[']}{\val'}}}$ \\
+    %% $\e_2 = \ap{\inA[_1'']{\lx\Ex['']}}{\inA[_2'']{\val''}}$, 
+    %%   by lemmas~\ref{lem:Av},\ref{lem:Ex} \\
+    %% $\e' = \inA[_1''']{\inA[_2''']{\substx{\Ex[''']}{\val'''}}}$ 
+    %%   \begin{itemize}
+    %%     \item $\e_1 \pstep \e'$ by $\pstep def(3)$, by IH, subst corollary
+    %%     \item $\e_2 \pstep \e'$ by $\pstep def(2)$, by, subst corollary
+    %%   \end{itemize}
+    %%   %
+    %%   % subsubcase: \Ap = \inA{\Ap} e
+    %%   \case{\Ap = \ap{\inA{\Ap}}{\e_3}}
+    %% $\e   = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}$ \\
+    %% $\e_1 = \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}}$ \\
+    %% $\e_2 = \inAp['']{\ap{\inA[_1'']{\lx\inAm['']{\Ex['']}}}{\Av[_2'']}}$, 
+    %% by lemmas~\ref{lem:Av}, \ref{lem:Ex}, \ref{lem:AmEx}, \ref{lem:Ape}
+    %% \begin{itemize}
+    %%   \item $\e_1 \pstep \e'$ by $\pstep def(3)$, 
+    %%         by IH, subst corollary
+    %%   \item $\e_2 \pstep \e'$ by $\pstep def(2)$, 
+    %%         by IH
+    %% \end{itemize}
+    %% \end{byCases}
+  \end{byCases}
+  %
+  % pstep def #3
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(3)}
+  $\e \pstep \e_2$ subcases by $\pstep def(2),(3)$, analogous to above case.
+  %
+  %pstep def #4
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(4)}
+  Claim holds by IH.
+\end{byCases}
+\end{proof}
+
+\begin{lemma}[Diamond Property for Contexts]
+\label{lem:diamondC}
+If $\C \pstep \C_1$ and $\C \pstep \C_2$, then $\exists \C'$ s.t. $\C_1 \pstep
+\C'$ and $\C_2 \pstep \C'$.
+\end{lemma}
+
+\begin{proof}
+  By structural induction on $\C$.
+\end{proof}
+
+\begin{lemma}
+\label{lem:diamondhelp1}
+If $\e = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}$, $\inAp{\Am}\in\A$, and
+$\e \pstep \e'$ by $\pstep\!def(3)$, then $\e'$ has shape
+$\inAp[']{\ap{\inA[_1']{\lx\inAm[']{\Ex[']}}}{\inA[_2']{\val'}}}$, and
+\IH{\Ap}, \IH{\A_1}, \IH{\A_2}, \IH{\Am}, \IH{\E}, \IH{\val}
+\end{lemma}
+
+\begin{proof}
+  By structural induction on $\Ap$.
+  \begin{byCases}
+    %
+    % case Ap = hole
+    %
+    \case{\Ap = \hole}
+    Since $\inAp{\Am} \in \A$, $\Am = \hole$, so
+    $\e   = \ap{\inA[_1]{\lx\Ex}}{\Av[_2]}$ \\
+    Since $\e \pstep \e'$ by $\pstep\!def(3)$:
+    \begin{itemize}
+      \item $\inA[_1]{\lx\Ex} \pstep \inA[_1']{\lx\Ex[']}$, 
+        with \IH{\A_1},\IH{\E},
+        by $\Av$ and $\Ex$ shape lemmas (\ref{lem:Av} and \ref{lem:Ex}).
+      \item $\Av[_2] \pstep \inA[_2']{\val'}$, with \IH{\A_2},\IH{\val}
+        by $\Av$ lemma (\ref{lem:Av})
+    \end{itemize}
+    Thus, $e'= \inAp[']{\ap{\inA[_1']{\lx\inAm[']{\Ex[']}}}{\inA[_2']{\val'}}}$,
+    where $\Ap' = \Am' = \hole$
+    %
+    % case Ap = A[Ap] e
+    %
+    \case{\Ap = \inA{\Ap_1}{\e_1}}
+    $\e = \ap{\inA{\inAp[_1]{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}}}}{\e_1}$ \\
+    by $\pstep\!def(3)$,
+    $\e \pstep \e' = \ap{\inA[']{\inAp[_1']{\ap{\inA[_1']{\lx\inAm[']{\Ex[']}}}
+                                               {\inA[_2']{\val'}}}}}{\e_1'}$,
+    where:
+    \begin{itemize}
+      \item $\inA{\inAp[_1]{\ap{\inA[_1]{\lx\inAm{\Ex}}}
+                                   {\inA[_2]{\val}}}}
+                   \pstep
+             \inA[']{\inAp[_1']{\ap{\inA[_1']{\lx\inAm[']{\Ex[']}}}
+                                   {\inA[_2']{\val'}}}}$\\
+       bc by IH,
+       $\inAp[_1]{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\inA[_2]{\val}}}
+           \pstep
+        \inAp[_1']{\ap{\inA[_1']{\lx\inAm[']{\Ex[']}}}{\inA[_2']{\val'}}}$,\\
+        with \IH{\Ap_1}, \IH{\A_1}, \IH{\Am}, \IH{\E}, \IH{\A_2}, \IH{\val}\\
+        Since, we lost an argument,
+        $\inA{\inAp[_1]{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\inA[_2]{\val}}}}$ 
+        is an answer, so it's also true that \IH{\A}, 
+        by $\Av$ lemma (\ref{lem:Av})
+      \item $\e_1 \pstep \e_1'$
+    \end{itemize}
+    %% $\e_2 = \inAp['']{\ap{\inA[_1'']{\lx\inAm['']{\Ex['']}}}{\Av[_2'']}}$, 
+    %% by lemmas~\ref{lem:Av}, \ref{lem:Ex}, \ref{lem:AmEx}, \ref{lem:Ape}
+    %% \begin{itemize}
+    %%   \item $\e_1 \pstep \e'$ by $\pstep def(3)$, 
+    %%         by IH, subst corollary
+    %%   \item $\e_2 \pstep \e'$ by $\pstep def(2)$, 
+    %%         by IH
+    %% \end{itemize}
+
+  \end{byCases}
+\end{proof}
+
+%
+%
+% Substitution lemmas
+
+\subsection{Substitution Lemmas}
+
+\newcommand{\substxetwo}[2][]{\substx{#2}{e_2#1}}
+\begin{lemma}[Substitution]
+\label{lem:subst}
+  If $\e_1 \pstep \e_1'$ and $\e_2 \pstep \e_2'$, then $\substxetwo{\e_1}
+  \pstep \substxetwo[']{\e_1'}$.
+\end{lemma}
+
+\begin{proof}
+By structural induction on $\e_1 \pstep \e_1'$.
+\begin{byCases}
+  \case[(base)]{\e_1 = \e_1'}
+  %
+  % \pstep def(2)
+  \case{\e_1 \pstep \e_1' \textrm{ by } \pstep def(2)}
+  $\e_1 = \inAp{\ap{ \inA[_1]{\ly\inAm{\Ey}} }
+                  { \Av[_2] }}$, \\
+  $\e_1' = \inAp[']{\inA[_1']{\inA[_2']{\substy{\inAm[']{\Ey[']}}{\val'}}}}$ \\
+  by IH, \\
+  $\substxetwo{\Ap} \pstep \substxetwo[']{\Ap'}$ \\
+  $\substxetwo{\A_1} \pstep \substxetwo[']{\A_1'}$ \\
+  $\substxetwo{\inAm{\Ey}} \pstep \substxetwo[']{\inAm[']{\Ey[']}}$ \\
+  $\substxetwo{\A_2} \pstep \substxetwo[']{\A_2'}$ \\
+  $\substxetwo{\val} \pstep \substxetwo[']{\val'}$
+  \begin{align*}
+    &\substx{\e_1}{\e_2} \\
+    \tag{distribute subst}
+    = &\inhole{\substxetwo{\Ap}}
+              {\ap{ \inhole{\substxetwo{\A_1}}
+                           {\substxetwo{\ly\inAm{\Ey}}} }
+                  { \substxetwo{\Av[_2]} }} \\
+    \tag{$\pstep def(2)$+IH}
+\pstep&\inhole{\substxetwo[']{\Ap'}}
+      {\inhole{\substxetwo[']{\A_1'}}
+      {\inhole{\substxetwo[']{\A_2'}}
+              {\substy{\substxetwo[']{\inAm[']{\Ey[']}}}
+                      {\substxetwo[']{\val'}}}}} \\
+    \tag{property of subst}
+    = &\inhole{\substxetwo[']{\Ap'}}
+      {\inhole{\substxetwo[']{\A_1'}}
+      {\inhole{\substxetwo[']{\A_2'}}
+              {\substxetwo[']{\substy{\inAm[']{\Ey[']}}{\val'}}}}} \\
+    \tag{undist subst}
+    = &\substxetwo[']{
+         \inAp[']{\inA[_1']{\inA[_2']{\substy{\inAm[']{\Ey[']}}{\val'}}}}} \\
+    = &\substxetwo[']{\e_1'}
+  \end{align*}
+  %
+  % \pstep def(3)
+  \case{\e_1 \pstep \e_1' \textrm{ by } \pstep def(3)}
+  by IH and distributing and undistributing subst
+  %
+  % \pstep def(24)
+  \case{\e_1 \pstep \e_1' \textrm{ by } \pstep def(4)}
+  by IH
+\end{byCases}
+\end{proof}
+
+\begin{corollary}[Substitution]
+If $\Ap \pstep \Ap'$, $\e_1 \pstep \e_1'$, and $\e_2 \pstep \e_2'$, then
+$\inAp{\substx{\e_1}{\e_2}} \pstep \inAp[']{\substx{\e_1'}{\e_2'}}$, etc.
+\end{corollary}
+
+\begin{proof}
+By lemmas~\ref{lem:Ee} and \ref{lem:subst}.
+\end{proof}
+
+
+
+%% \begin{lemma}
+%% If $\e = \inD{\ap{ \inA[_1]{\lx\inC{\Ex}} }{ \Av[_2] }}$ is a $\betaneednr$
+%% redex, and $\e \pstep \e'$ by $\pstep def(3)$, then $\e'$ has the shape
+%% $\inD[']{\ap{ \inA[_1']{\lx\inC[']{\Ex[']}} }{ \Av[_2'] }}$.
+%% \end{lemma}
+
+%% \begin{proof}
+%% \begin{byCases}
+%%   \case{\D = \hole} Then $\e = \ap{ \inA[_1]{\lx\inC{\Ex}} }{ \Av[_2] }$ and
+%%   since $\e \pstep \e'$ by $\pstep def(3)$, $\e' = \ap{
+%%     \inA[_1']{\lx\inC[']{\Ex[']}} }{ \Av[_2'] }$ by lemmas~\ref{lem:Av} and
+%%   \ref{cor:CEx}.  
+%%   \case{\D \neq \hole} Since $\D$ is the minimal $\D$ such that
+%%   $\e$ is a $\betaneednr$ redex, then $\ap{ \inA[_1]{\lx\inC{\Ex}} }{ \Av[_2]
+%%   }$ is not a $\betaneednr$ redex and either reduces to itself by $\pstep
+%%   def(1)$ or to $\ap{ \inA[_1']{\lx\inC[']{\Ex[']}} }{ \Av[_2'] }$ by $\pstep
+%%   def(3)$, according to lemmas~\ref{lem:Av} and \ref{cor:CEx}.
+%% \end{byCases}
+%% \end{proof}
+
+
+%
+%
+% not betaneed redex lemmas
+
+\subsection{Not $\betaneednr$ Redex Lemmas}
+Note: $\betaneednr$ redex = $\inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}},\, 
+                             \inAp{\Am} \in \A$
+\begin{lemma}
+\label{lem:Avbeta}
+$\Av$ is not a $\betaneednr$ redex.
+\end{lemma}
+
+\begin{lemma}
+\label{lem:Exbeta}
+$\Ex$, where $\E$ does not bind $x$, is not a $\betaneednr$ redex.
+\end{lemma}
+
+%% \begin{lemma}
+%% \label{lem:AmExbeta}
+%% $\inAm{\Ex}$, where $\E$ does not bind $x$, is not a $\betaneednr$ redex.
+%% \end{lemma}
+
+
+
+
+%
+%
+% shape preserving lemmas
+
+\subsection{Shape Preserving Lemmas}
+
+\begin{lemma}
+\label{lem:Av}
+If $\e = \Av$ and $\e \pstep \e'$, then $\e' = \inA[']{\val'}$ where $\A \pstep
+\A'$ and $\val \pstep \val'$.
+\end{lemma}
+
+\begin{proof}
+By structural induction on $\A$. Proceed by cases on proof of $\e \pstep
+\e'$.
+\begin{byCases}
+  \case{\e \pstep \e' \textrm{ by } \pstep def(1)} $\A' = \A,\,\val = \val'$
+  \case{\e \pstep \e' \textrm{ by } \pstep def(2)}
+  Impossible, because $\e$ is not a $\betaneednr$ redex, by 
+  lemma~\ref{lem:Avbeta}.
+  \case{\e \pstep \e' \textrm{ by } \pstep def(3)}
+  If $\A = \hole$, trivial. \\
+  If $\A = \ap{\inA[_1]{\lx\A_2}}{\e_1}$,
+  lemma holds by IH.
+  \case{\e \pstep \e' \textrm{ by } \pstep def(4)}  $\A' = \A = \hole$.
+\end{byCases}
+\end{proof}
+
+
+\begin{lemma}
+\label{lem:Ex}
+If $\e = \Ex$, where $E$ does not bind $x$, and $\e \pstep \e'$, then $\e' =
+\Ex[']$, $\E'$ does not bind $x$, and $\E \pstep \E'$.
+\end{lemma}
+
+\begin{proof}
+By induction on $\E$. Proceed by cases on proof of $\e \pstep \e'$.
+\begin{byCases}
+  \case{\e \pstep \e' \textrm{ by } \pstep def(1)} $\E' = \E$ 
+  \case{\e \pstep \e' \textrm{ by } \pstep def(2)} 
+  Impossible because $\e$ is not a $\betaneednr$ redex, by 
+  lemma~\ref{lem:Exbeta} 
+  \case{\e \pstep \e' \textrm{ by } \pstep def(3)}
+  \begin{byCases}
+    \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+    \case{\E = \hole} $\E' = \hole$
+    \case{\E = \ap{\E_1}{\e_1}} Claim holds by IH.
+    \case{\E = \inA{\E_1}} 
+    If $\A = \hole$, trivial.\\
+    If $\A = \ap{\inA[_1]{\lx\A_2}}{\e_1}$, then lemma holds for 
+    $\inA[_2]{\Ex[_1]}$ by IH, and $\A_1 \pstep \A_1'$ by 
+    lemma~\ref{lem:Av}, so $\E' = \ap{\inA[_1']{\lx\inA[_2']{\E_1'}}}{\e_1'}$.
+    \case{\E = \inAp{\ap{\inA{\ly\inAm{\inE[_1]{y}}}}{\E_2}},\,\inAp{\Am}\in\A} 
+    Claim holds for $\Ex[_2]$ by IH. $\Am \pstep \Am'$ by lemma~\ref{lem:AmEx}.
+    $\A \pstep \A'$ by lemma~\ref{lem:Av}.
+     $\Ap \pstep \Ap'$ by lemma~\ref{lem:Ape} so 
+      $\E' = \inAp[']{\ap{\inA[']{\ly\inAm[']{\inE[_1']{y}}}}{\E_2'}}$
+  \end{byCases}
+  \case{\e \pstep \e' \textrm{ by } \pstep def(4)} 
+  Impossible because no $\E$ has shape $\lx.\ldots$.
+\end{byCases}
+\end{proof}
+
+
+\begin{lemma}
+\label{lem:AmEx}
+If $\e = \inAm{\Ex}$, where $\inAm{\E}$ does not bind $x$, and $\e \pstep \e'$,
+then $\e' = \inAm[']{\Ex[']}$, $\inAm[']{\E'}$ does not bind $x$, and $\Am
+\pstep \Am'$ and $\E \pstep \E'$.
+\end{lemma}
+
+\begin{proof}
+By induction on $\Am$. $\Ex \pstep \Ex[']$ by lemma~\ref{lem:Ex}.
+\begin{byCases}
+  \case{\Am = \hole} $\Am' = \hole$
+  %% \case{\Am = \ly\Am_1} Claim holds for $\inAm[_1]{\Ex}$ by IH. 
+  %% $\Am' = \ly\Am_1'$
+  \case{\Am = \inA{\ly\Am_1}} Claim holds by IH and lemma~\ref{lem:Av}.
+\end{byCases}
+\end{proof}
+
+
+\begin{lemma}
+\label{lem:Ape}
+If $\e = \inAp{\e_1}$, $\e \pstep \e'$ by $\pstep def(3)$, and $\e_1 \pstep
+\e_1'$, then $\e' = \inAp[']{\e_1'}$, where $\Ap \pstep \Ap'$.
+\end{lemma}
+
+\begin{proof}
+By induction on $\Ap$.
+\begin{byCases}
+  \case{\Ap = \hole} $\Ap' = \hole$
+  %% \case{\Ap = \ap{\Ap_1}{\e_2}} Claim holds by IH.
+  \case{\Ap = \ap{\inA{\Ap_1}}{\e_2}}
+  \begin{byCases}
+    \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+    \case{\A = \hole} Claim holds by IH.
+    \case{\A = \ap{\inA[_1]{\lx\A_2}}{\e_3}} 
+    Claim holds by IH and lemmas~\ref{lem:Av} and~\ref{lem:Ae}.
+  \end{byCases}
+\end{byCases}
+\end{proof}
+
+\begin{lemma}
+\label{lem:Ae}
+If $e = \inA{\e_1}$, $\e \pstep \e'$ by $\pstep def(3)$, and $\e_1 \pstep
+\e_1'$, then $\e' = \inA[']{\e_1'}$ where $\A \pstep \A'$.
+\end{lemma}
+
+\begin{proof}
+By induction on $\A$.
+\begin{byCases}
+  \case{\A = \hole} $\A' = \hole$
+  \case{\A = \ap{\inA[_1]{\lx\A_2}}{\e_2}} $\A_2 \pstep \A_2'$ by IH and 
+  $\A_1 \pstep \A_1'$ by lemma~\ref{lem:Av}, so claim holds with 
+  $\A' = \ap{\inA[_1']{\lx\A_2'}}{\e_2'}$
+\end{byCases}
+\end{proof}
+
+
+
+\end{document}

@@ -1,0 +1,57 @@
+%
+%
+% Definition: parallel reduction
+\begin{definition}[$\pstep$] Parallel reduction 
+
+\begin{tabular}{rcllc}
+\psteprulenoif
+  { \e }{ \e }
+\psteprulenoif
+  { \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}} }
+  { \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}} }
+& if & \multicolumn{3}{l}{ $\inAp{\Am} \in A,\, \inAp[']{\Am'} \in \A,$ } \\
+& & \multicolumn{3}{l}
+    { $\Ap \pstep \Ap',\, \A_1 \pstep \A_1',\, A_2 \pstep \A_2',\,
+       \Am \pstep \Am',\, \E \pstep \E',\, \val \pstep \val'$ } \\
+\psteprulenoif
+  { \ap{\e_1}{\e_2} }{ \ap{\e_1'}{\e_2'} }
+& if & \multicolumn{3}{l}{ $\e_1 \pstep \e_1',\; \e_2 \pstep \e_2'$ } \\
+\psteprulenoif
+  { \lxe }{ \lxe' }
+& if & \multicolumn{3}{l} { $\e \pstep \e'$ }
+\end{tabular}
+\end{definition}
+
+
+%
+%
+% Definition: parallel reduction of contexts
+\begin{definition}[$\pstep$ for contexts] Parallel reduction of contexts. 
+
+If all subterms in a context $\E$ parallel reduce, then $\E \pstep \E'$, where
+each $\e$ in $\E$ is replaced with $\e'$ in $\E'$, and $\e \pstep \e'$.
+
+\begin{tabular}{ccclc}
+$\hole$       & $\pstep$ & $\hole$ \\
+$\ap{\inA[_1]{\lx\A_2}}{\e}$ 
+              & $\pstep$ & $\ap{\inA[_1']{\lx\A_2'}}{\e'}$ 
+  & if $\A_1 \pstep \A_1',\, \A_2 \pstep \A_2',\, \e \pstep \e'$ \\
+%% $\ap{\Ap}{\e}$ & $\pstep$ & $\ap{\Ap'}{\e'}$ 
+%%   & if $\Ap \pstep \Ap',\, \e \pstep \e'$ \\
+$\ap{\inA{\Ap}}{\e}$ & $\pstep$ & $\ap{\inA[']{\Ap'}}{\e'}$
+  & if $\A \pstep \A',\, \Ap \pstep \Ap',\, \e \pstep \e'$ \\
+%% $\lx\Am$       & $\pstep$ & $\lx\Am'$
+%%   & if $\Am \pstep \Am'$ \\
+$\inA{\lx\Am}$    & $\pstep$ & $\inA[']{\lx\Am'}$
+  & if $\A \pstep \A',\, \Am \pstep \Am'$ \\
+$\ap{\E}{\e}$ & $\pstep$ & $\ap{\E'}{\e'}$
+  & if $\E \pstep \E',\, \e \pstep \e'$ \\
+$\inA{\E}$    & $\pstep$ & $\inA[']{\E'}$
+  & if $\A \pstep \A',\, \E \pstep \E'$ \\
+$\inAp{\ap{\inA{\lx\inAm{\inE[_1]{x}}}}{\E_2}}$
+              & $\pstep$ & 
+$\inAp[']{\ap{\inA[']{\lx\inAm[']{\inE[_1']{x}}}}{\E_2'}}$
+ & if $\inAp{\Am},\,\Ap \pstep \Ap',\, \A \pstep \A',\, \Am \pstep \Am',\,
+       \E_1 \pstep \E_1',\, \E_2 \pstep \E_2'$ \\
+\end{tabular}
+\end{definition}

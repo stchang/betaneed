@@ -1,0 +1,549 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+\usepackage{pfsteps}
+
+\begin{document}
+
+\input{cbneednew-syntax}
+%
+\begin{align*}
+\step&: \textrm{compatible closure of } \betaneednr \\
+\steps&: \textrm{reflexive, transitive closure of } \step \\
+\pstep&: \textrm{parallel reduction of } \betaneednr \textrm{ redexes} \\
+\srstep &: \textrm{standard reduction relation} \\
+&\inE{\e} \srstep \inE{\e'} \textrm{ if } \e \;\betaneednr\; \e' \\
+\srsteps &: \textrm{reflexive, transitive closure of } \srstep
+\end{align*}
+
+\input{cbneednew-parallel-red}
+
+
+
+\pagebreak
+
+
+
+%
+% Definition: Standard Reduction Sequences
+%
+\begin{definition}[$\srseqop$]
+Standard reduction sequences $\srseqset$
+\begin{itemize}
+\item $x \subset \srseqset$
+\item If $\srseqe{m}$, then $\srseq{\lxe_1}{\lxe_m}$
+\item If $\srseqe{m}$ and $\srseqe[']{n}$
+      then $\srseqappend{(\ap{\e_1}{\e_1'})}{(\ap{\e_m}{\e_1'})}
+            \srseq{(\ap{\e_m}{\e_2'})}{(\ap{\e_m}{\e_n'})}$
+\item If $\srseqe{m}$ and $\e_0 \srstep \e_1$, then $\e_0 \srseqop \srseqe{m}$
+\end{itemize}
+\end{definition}
+
+
+%
+% Definition: Size function for pstep of terms
+%
+\begin{definition}[size function $\size{\cdot}$]
+\begin{align*}
+  \size{\e \pstep \e} &= 0 \\
+  \size{ \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}} 
+           \pstep
+         \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}} }
+    &= \size{\Ap \pstep \Ap'} + \size{\A_1 \pstep \A_1'} +
+       \size{\inAm{\Ex} \pstep \inAm[']{\Ex[']}} \\
+    &\hspace{4mm} + \size{\A_2 \pstep A_2'} + 
+     \numfv{x}{\inAm[']{\Ex[']}} \times \size{\val \pstep \val'} + 1 \\
+  \size{\apppp{e_1}{e_2} \pstep \apppp{\e_1'}{\e_2'}}
+    &= \size{\e_1 \pstep \e_1'} + \size{\e_2 \pstep \e_2'} \\
+  \size{\lxe \pstep \lxe'} &= \size{\e \pstep \e'}
+\end{align*}
+\end{definition}
+
+
+%
+% Definition: size function for pstep of contexts
+%
+\begin{definition}[size function for contexts]
+Size of context is equal to sum of sizes of subcontexts and subterms.
+\end{definition}
+
+
+
+%
+% Curry-Feys Standardization Theorem
+%
+\begin{theorem}[Curry-Feys Standardization]
+$\e \steps \e'$ iff $\srseqe{n}$ s.t. $\e = \e_1$ and $\e' = \e_n$.
+\end{theorem}
+
+\begin{proof}
+By lemma~\ref{lem:pstepsr}
+\end{proof}
+
+
+%
+% Main Standardization Lemma 
+% If e => e' and srseq:e',e2'...en', there exists srseq:e1,e2...ep s.t.
+% e1 = e and ep = en'
+%
+\begin{lemma}
+\label{lem:pstepsr}
+If $\e \pstep \e'$ and $\e' \srseqop \srseq{\e_2'}{\e_n'}$, then there exists
+$\srseqconse[_1] \srseq{\e_2}{\e_p}$ s.t. $\e_1 = \e$ and $\e_p = \e_n'$.
+\end{lemma}
+
+\begin{proof}
+By triple lexicographic induction on 1) length $n$ of given standard reduction
+sequence, 2) $\size{\e \pstep \e'}$, and 3) structure of $\e$. Proceed by case
+analysis on last step in derivation of $\e \pstep \e'$
+\begin{byCases}
+  %
+  % pstep def #1
+  \case[(base)]{\e = \e'} Then $\e_1 = \e = \e'$ and $\e_p = \e_n'$
+  %
+  % pstep def #2
+  \case{\e \pstep \e' \textrm{ by } \pstep def(2)}
+  $\e = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\inA[_2]{\val}}},$\\
+  $\e' = \inAp[']{\inA[_1']{\inA[_2']{\substx{\inAm[']{\Ex[']}}{\val'}}}}$\\
+  Let $\e'' = \inAp{\inA[_1]{\inA[_2]{\substx{\inAm{\Ex}}{\val}}}}$ \\
+  Since $\e$ is $\betaneednr$ redex,
+  $\e \srstep \e'' \pstep\e'$\\
+  By IH and size lemma(\ref{lem:size}), there exists $\srseq{\e_2}{e_p}$ s.t.
+  $\e_2 = \e''$ and $\e_p = \e_n'$
+  %
+  %pstep def #3
+  \case{\e \pstep \e' \textrm{ by } \pstep def(3)}
+  $e = \ap{e_3}{e_4}$, $e' = \ap{e_3'}{e_4'}$, 
+  $e_3 \pstep e_3'$, $e_4 \pstep e_4'$
+  \begin{byCases}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+    \case{\e' \srstep \e_2'} 
+    By lemma~\ref{lem:srstep}, IH, and reasoning from redex text.
+    \case{otherwise}
+    Same reasoning as redex text.
+  \end{byCases}
+  %
+  %pstep def #4
+  \case{\e \pstep \e' \textrm{ by } \pstep def(4)}
+  Claim holds by IH.
+\end{byCases}
+\end{proof}
+
+
+
+
+
+\pagebreak
+
+
+%
+% Main Standardization Helper Lemma: convert pstep + srstep to srsteps + pstep
+% If e => e* |--> e** there exists e*** s.t. e |-->> e*** => e**
+%
+\newcommand{\eone}{\e^{*}}
+\newcommand{\etwo}{\e^{**}}
+\newcommand{\ethree}{\e^{***}}
+
+\begin{lemma}
+\label{lem:srstep}
+If $\e \pstep \eone \srstep \etwo$, then there exists $\ethree$ s.t. $\e
+\srsteps \ethree \pstep \etwo$.
+\end{lemma}
+
+\begin{proof}
+By double lexicographic induction on $\size{\e \pstep \eone}$ and structure of
+$\e$. Proceed by cases on proof of $\e \pstep \eone$.
+\begin{byCases}
+  %
+  % \pstep def(1)
+  \case{\e \pstep \eone \textrm{ by } \pstep def(1)} 
+  $\e = \eone,\,\ethree = \etwo$
+  %
+  % \pstep def(2)
+  \case{\e \pstep \eone \textrm{ by } \pstep def(2)} 
+  By the fact that $\e$ is a $\betaneednr$ redex, size lemma(\ref{lem:size}), 
+  and IH (same reasoning as redex text).
+  %
+  % \pstep def(3)
+  \case{\e \pstep \eone \textrm{ by } \pstep def(3)} 
+  $\e = \ap{\e_1}{\e_2},$ \\
+  $\eone = \ap{\e_1'}{\e_2'},$ \\
+  $\e_1 \pstep \e_1'$, $\e_2 \pstep \e_2'$ \\
+   By subcases of $\eone \srstep \etwo$:
+  \begin{byCases}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+    %
+    % Subcase: e* is betaneed redex
+    \case{\eone \textrm{ is a } \betaneednr \textrm{ redex}}
+    $\eone = \inAp{\ap{\inA[_1]{\lx\inAm{\Ex}}}{\Av[_2]}},$ \\
+    $\etwo = \inAp{\inA[_1]{\inA[_2]{\substx{\inAm{\Ex}}{\val}}}}$ \\
+    (Similar reasoning to Case 3.4 below)
+    \begin{byCases}
+      \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubcase {#1}.}}
+      %
+      % Subsubcase: \Ap = \hole
+      \case{\Ap = \hole}
+      $\Am = \hole,\,\e_1 \pstep \inA[_1]{\lx\Ex},\,\e_2 \pstep\Av[_2]$\\
+      By lemma~\ref{lem:srstepans} and $\Ex$ shape lemma,
+      there exists $\inA[_1']{\lx\Ex[']}$ and $\inA[_2']{\val'}$ s.t. \\
+      $\underline{ \e_1 \srsteps \inA[_1']{\lx\Ex[']} 
+                        \pstep \inA[_1]{\lx\Ex}}$ and \\
+      $\underline{ \e_2 \srsteps \inA[_2']{\val'} \pstep \Av[_2] }$. Thus,
+      %
+      \begin{align*}
+        \e = \ap{\e_1}{\e_2} &\srsteps \ap{\inA[_1']{\lx\Ex[']}}{\e_2} \\
+                            &\srsteps \ap{\inA[_1']{\lx\Ex[']}}
+                                         {\inA[_2']{\val'}} \\
+                            &\pstep \ap{\inA[_1]{\lx\Ex}}{\inA[_2]{\val}}
+      \end{align*}
+      so $\ethree=\ap{\inA[_1']{\lx\Ex[']}}{\inA[_2']{\val'}}$
+      %
+      % Subsubcase: \Ap = \hole
+      \case{\Ap = \ap{\inA[_3]{\Ap_1}}{\e_2'}}
+      Then $\Am = \inA[_4]{\ly\Am_1}$ s.t. $\inAp[_1]{\Am_1} \in \A$,
+      so $\e_1 \pstep 
+      \inA[_3]{\inAp[_1]{\ap{\inA[_1]{\lx\inA[_4]{\ly\inAm[_1]{\Ex}}}}
+                           {\Av[_2]}}},$
+      which is an answer, bc there is now one more $\lambda$ than arguments.
+      \begin{byCases}
+        \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubsubcase {#1}.}}
+        %
+        % Subsubsubcase: lambda y is the innermost, unpaired lambda
+        \case{\Ap_1 = \Am_1 = \hole,\, (\ly \textrm{ is innermost lambda})}
+        $\e_1 \pstep 
+        \inA[_3]{\ap{\inA[_1]{\lx\inA[_4]{\ly\inE{x}}}}{\Av[_2]}} = 
+        \inA[_5]{\ly\inE{x}}$, 
+        where $\A_5 = \inA[_3]{{\ap{\inA[_1]{\lx\A_4}}{\Av[_2]}}}$\\
+        By lemma~\ref{lem:srstepans}, and $\Ex$ shape lemma, there exists 
+        $\A_5'$ and $\Ex[']$ s.t. \\
+        $\underline{\e_1 \srsteps \inA[_5']{\ly\Ex[']} 
+                         \pstep \inA[_5]{\ly\Ex}}$. \\
+        Let $\underline{ \A_5' = \inA[_3']{{\ap{\inA[_1']{\lx\A_4'}}
+                                              {\e_3}}} }$ s.t. 
+        $\e_3 \pstep \Av[_2]$,\\
+        so by lemma~\ref{lem:srstepans}, there is some $\inA[_2']{\val'}$ s.t. 
+        $\underline{ \e_3 \srsteps \inA[_2']{\val'} \pstep\Av[_2] }$. Thus,
+        \begin{align*}
+          \e = \ap{\e_1}{\e_2} 
+            &\srsteps \ap{\inA[_5']{\ly\Ex[']}}{\e_2} \\
+            &=\ap{\inA[_3']{{\ap{\inA[_1']{\lx\inA[_4']{\ly\Ex[']}}}{\e_3}}}}
+                 {\e_2}\\
+            &\srsteps\ap{\inA[_3']{{\ap{\inA[_1']{\lx\inA[_4']{\ly\Ex[']}}}
+                                       {\inA[_2']{\val'}}}}}{\e_2}\\
+            &\pstep \ap{\inA[_3]{{\ap{\inA[_1]{\lx\inA[_4]{\ly\inE{x}}}}
+                                     {\Av[_2]}}}}{\e_2'}
+        \end{align*}
+        So $\ethree = 
+        \ap{\inA[_3']{{\ap{\inA[_1']{\lx\inA[_4']{\ly\Ex[']}}}
+                          {\inA[_2']{\val'}}}}}{\e_2'}$
+        %
+        % Subsubsubcase: lambda z is innermost unpaired lambda
+        \case{otherwise}
+        Let $\Am_1 = \inAm[_2]{\lz\hole}$ s.t. $\lz$ is the innermost unpaired 
+        $\lambda$ so that \\
+        $\e_1 \pstep 
+        \inA[_3]{\inAp[_1]{{\ap{\inA[_1]{\lx\inA[_4]{\ly\inAm[_2]{\lz\inE{x}}}}}
+                               {\Av[_2]}}}}$\\
+        Apply lemma~\ref{lem:srstepans} to $\e_1 \pstep \inA[_5]{\lz\Ex}$,
+        $\A_5 = 
+        \inA[_3]{\inAp[_1]{{\ap{\inA[_1]{\lx\inA[_4]{\ly\Am_2}}}
+                               {\Av[_2]}}}}$
+        and repeat analysis of above subcase.
+      \end{byCases}
+    \end{byCases}
+    %
+    \mbox{\hspace{-1cm}
+          \textit{(remaining subcases check possible} $\E$\textit{s)}}
+    %
+    % Subcase: e* reduction in E e context
+    \case{\eone = \ap{\inE{\e_3}}{\e_2'},\,\etwo = \ap{\inE{\e_3'}}{\e_2'},\,
+          \e_3 \betaneednr \e_3'} 
+    By IH on $\e_1 \pstep \inE{\e_3} \srstep \inE{\e_3'}$.
+    %
+    % Subcase: e* reduction in A[E] context
+    \case{\eone = \inA{\inE{\e_3}},\,\etwo = \inA{\inE{\e_3'}},\,
+          \e_3 \betaneednr \e_3'}
+    If $\A = \hole$, check cases of $\E$.\\
+    If $\A = \ap{\inA[_1]{\lx\A_2}}{\e_2'}$, then
+    $\eone = \ap{\inA[_1]{\lx\inA[_2]{\inE{\e_3}}}}{\e_2'}$, 
+    where $\e_1 \pstep \inA[_1]{\lx\inA[_2]{\inE{\e_3}}}$\\
+    By lemma~\ref{lem:srstepans}, there exists $\inA[_1']{\lx\e_4}$ s.t.
+    $\underline{\e_1 \srsteps \inA[_1']{\lx\e_4} 
+                     \pstep \inA[_1]{\lx\inA[_2]{\inE{\e_3}}}}$,\\
+    where $\A_1' \pstep \A_1$ and $\e_4 \pstep \inA[_2]{\inE{\e_3}}$\\
+    Since $\e_4 \pstep \inA[_2]{\inE{\e_3}} \srstep \inA[_2]{\inE{\e_3'}}$,
+    by IH, there exists $\e_5$ s.t. 
+    $\underline{ \e_4 \srsteps \e_5 \pstep \inA[_2]{\inE{\e_3'}} }$, Thus,
+    \begin{align*}
+    \e = \ap{\e_1}{\e_2} &\srsteps \ap{\inA[_1']{\lx\e_4}}{\e_2} \\
+                        &\srsteps \ap{\inA[_1']{\lx\e_5}}{\e_2} \\
+                        &\pstep \ap{\inA[_1]{\lx\inA[_2]{\inE{\e_3'}}}}{\e_2'}
+    \end{align*}
+    So $\ethree = \ap{\inA[_1']{\lx\e_5}}{\e_2}$
+    %
+    % Subcase: e* reduction in arg context
+    \case{\eone = \inAp{\ap{\inA{\lx\inAm{\inE[_1]{x}}}}{\inE[_2]{\e_3}}},\,
+          \etwo = \inAp{\ap{\inA{\lx\inAm{\inE[_1]{x}}}}{\inE[_2]{\e_3'}}},\,
+          \e_3 \betaneednr \e_3', \inAp{\Am}\in\A}
+    (Similar reasoning to case 3.1 above)
+    \begin{byCases}
+      \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubcase {#1}.}}
+      %
+      % Subsubcase: Ap = hole
+      \case{\Ap = \hole}
+    If $\Ap = \hole$, then $\Am = \hole$, so
+    $\e_1 \pstep \inA{\lx\inE[_1]{x}}$ and $\e_2 \pstep \inE[_2]{\e_3}$\\
+    Since $\e_1 \pstep \inA{\lx\inE[_1]{x}}$, by lemma~\ref{lem:srstepans}, 
+    there exists $\A'$ and $\e_5$ s.t. 
+    $\underline{\e_1 \srsteps \inA[']{\lx\e_5} \pstep \inA{\lx\inE[_1]{x}}}$,\\
+    where $\A' \pstep \A$ and $\e_5 \pstep \Ex[_1]$. By the $\Ex$ shape lemma, 
+    $\underline{\e_5 = \Ex[_1']}$, where $\E_1' \pstep \E_1$.\\
+    Since $\e_2 \pstep \inE[_2]{\e_3} \srstep \inE[_2]{\e_3'}$, by IH,
+    there exists $\e_4$ s.t. $\underline{\e_2 \srsteps \e_4
+                                             \pstep \inE[_2]{\e_3'}}$. Thus,
+    \begin{align*}
+      \e = \ap{\e_1}{\e_2} &\srsteps \ap{\inA[']{\lx\Ex[_1']}}{\e_2} \\
+                           &\srsteps \ap{\inA[']{\lx\Ex[_1']}}{\e_4} \\
+                           &\pstep \ap{\inA{\lx\Ex[_1]}}{\inE[_2]{\e_3'}}
+    \end{align*}
+    so $\ethree = \ap{\inA[']{\lx\Ex[_1']}}{\e_4}$.
+    %
+    % Subsubcase: Ap \neq hole
+    \case{\Ap = \ap{\inA[_1]{\Ap_1}}{\e_2'}}
+    Then $\Am = \inA[_2]{\ly\Am_1}$ s.t. $\inAp[_1]{\Am_1} \in \A$,
+    so $\e_1 \pstep 
+    \inA[_1]{\inAp[_1]{{\ap{\inA{\lx\inA[_2]{\ly\inAm[_1]{\inE[_1]{x}}}}}
+                          {\inE[_2]{\e_3}}}}}$, 
+    which is an answer, bc there is now one more $\lambda$ than arguments.
+    \begin{byCases}
+      \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubsubcase {#1}.}}
+      %
+      % Subsubsubcase: ly is innermost lambda
+      \case{\Ap_1 = \Am_1 = \hole,\, (\ly \textrm{ is innermost lambda})}
+    $\e_1 \pstep 
+    \inA[_1]{{\ap{\inA{\lx\inA[_2]{\ly\inE[_1]{x}}}}{\inE[_2]{\e_3}}}} = 
+    \inA[_3]{\ly\inE[_1]{x}}$, 
+    where $\A_3 = \inA[_1]{{\ap{\inA{\lx\A_2}}{\inE[_2]{\e_3}}}}$\\
+    By lemma~\ref{lem:srstepans}, and $\Ex$ shape lemma, there exists 
+    $\A_3'$ and $\Ex[_1']$ s.t. \\
+    $\underline{\e_1 \srsteps \inA[_3']{\ly\Ex[_1']} 
+                     \pstep \inA[_3]{\ly\Ex[_1]}}$ \\
+    Let $\underline{ \A_3' = \inA[_1']{{\ap{\inA[']{\lx\A_2'}}{\e_4}}} }$ s.t. 
+    $\e_4 \pstep \inE{\e_3} \srstep \inE[_2]{\e_3'}$,\\
+    so by IH, there is some $\e_5$ s.t. 
+    $\underline{ \e_4 \srsteps \e_5 \pstep\inE[_2]{\e_3'} }$. Thus,
+    \begin{align*}
+    \e = \ap{\e_1}{\e_2} &\srsteps \ap{\inA[_3']{\ly\Ex[_1']}}{\e_2}\\
+ &=\ap{\inA[_1']{{\ap{\inA[']{\lx\inA[_2']{\ly\Ex[_1']}}}{\e_4}}}}{\e_2}\\
+ &\srsteps\ap{\inA[_1']{{\ap{\inA[']{\lx\inA[_2']{\ly\Ex[_1']}}}{\e_5}}}}{\e_2}\\
+ &\pstep 
+ \ap{\inA[_1]{{\ap{\inA{\lx\inA[_2]{\ly\inE[_1]{x}}}}{\inE[_2]{\e_3'}}}}}{\e_2'}
+  \end{align*}
+    So $\ethree = 
+       \ap{\inA[_1']{{\ap{\inA[']{\lx\inA[_2']{\ly\Ex[_1']}}}{\e_5}}}}{\e_2}$
+       %
+       % Subsubsubcase: lz is innermost lambda
+    \case{otherwise}
+    Let $\Am_1 = \inAm[_2]{\lz\hole}$ s.t. $\lz$ is the innermost unpaired 
+    $\lambda$ so that \\
+    $\e_1 \pstep 
+    \inA[_1]{\inAp[_1]{{\ap{\inA{\lx\inA[_2]{\ly\inAm[_2]{\lz\inE[_1]{x}}}}}
+          {\inE[_2]{\e_3}}}}}$\\
+    Apply lemma~\ref{lem:srstepans} to $\e_1 \pstep \inA[_3]{\lz\Ex[_1]}$ and
+    repeat analysis of above subcase.
+    \end{byCases}
+    \end{byCases}
+  \end{byCases}
+  %
+  % \pstep def(4)
+  \case{\e \pstep \e' \textrm{ by } \pstep def(4)}
+  Impossible because not a $\betaneednr$ redex.
+\end{byCases}
+\end{proof}
+
+
+
+
+
+%
+% srstep Answer lemma
+% if e => A[\x.e'], there exists A' and e'' s.t. e |-->> A'[\x.e''] => A[\x.e']
+%
+\begin{lemma}
+\label{lem:srstepans}$\;$
+\begin{enumerate}
+\item If $\e \pstep \inA{\lxe'}$, there exists $\A'$ and $\e''$ s.t. $\e
+  \srsteps \inA[']{\lx\e''} \pstep \inA{\lx\e'}$, where $\A' \pstep \A$ and
+  $\e'' \pstep \e'$.
+\item If $\e \pstep x$, then $\e \srsteps x$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+Same reasoning as redex text.
+\end{proof}
+
+
+
+
+
+\pagebreak
+
+
+
+\newcommand{\sizesubstx}[2]{\size{\substx{#1}{\val} \pstep \substx{#2}{\val'}}}
+\newcommand{\sizeRHS}[2]
+           {\size{#1 \pstep #2} + \numfvx{#2} \times \size{\val \pstep \val'} }
+
+\newcommand{\sizeIH}[2]{ \sizesubstx{#1}{#2} \leq \sizeRHS{#1}{#2} }
+
+%
+% Size Lemma
+%
+\begin{lemma}[Size]
+\label{lem:size}
+If $s_\e = \size{\e \pstep \e'}$ and $s_\val = \size{\val \pstep \val'}$ then:
+\begin{enumerate}
+\item $\substx{\e}{\val} \pstep \substx{\e'}{\val'}$
+\item $\sizeIH{\e}{\e'}$
+\end{enumerate}
+\end{lemma}
+
+\renewcommand{\eone}{\inAp{\ap{\inA[_1]{\ly\inAm{\Ey}}}{\inA[_2]{\val_1}}}}
+\renewcommand{\etwo}{\inAp[']{\inA[_1']{\inA[_2']{\substy{\inAm[']{\Ey[']}}{\val_1'}}}}}
+\begin{proof}
+By induction on $\e$. Case analysis on last step in $\e \pstep \e'$.
+\begin{byCases}
+  \case{\e \pstep \e' \textrm{ by } \pstep def(1)}
+  $\e = \e'$. Proof by subcases on $\e$. Same reasoning as redex book.
+  \case{\e \pstep \e' \textrm{ by } \pstep def(2)}
+  $\e = \inAp{\ap{\inA[_1]{\ly\inAm{\Ey}}}{\inA[_2]{\val_1}}},$\\
+  $\e' = \inAp[']{\inA[_1']{\inA[_2']{\substy{\inAm[']{\Ey[']}}{\val_1'}}}}$\\
+  $\size{\e \pstep \e'} = \size{\Ap \pstep \Ap'} + \size{\A_1 \pstep \A_1'} +
+    \size{\A_2 \pstep A_2'} + \size{\inAm{\Ey} \pstep \inAm[']{\Ey[']}} + 
+    \numfv{y}{\inAm[']{\Ey[']}} \times \size{\val_1 \pstep \val_1'} + 1$ \\
+  By IH:\\
+  $\sizeIH{\Ap}{\Ap'}$ \\
+  $\sizeIH{\A_1}{\A_1'}$ \\
+  $\sizeIH{\inAm{\Ey}}{\inAm[']{\Ey[']}}$ \\
+  $\sizeIH{\A_2}{\A_2'}$ \\
+  $\sizeIH{\val_1}{\val_1'}$ 
+  \begin{align*}
+    &\size{\substx{\e}{\val} \pstep \substx{\e'}{\val'}}  \\
+    =\; &\sizesubstx{\Ap}{\Ap'} + \sizesubstx{\A_1}{\A_1'} + 
+         \sizesubstx{\A_2}{\A_2'} + \\
+        &\sizesubstx{\inAm{\Ey}}{\inAm[']{\Ey[']}} + \\
+        &\numfvy{\inAm[']{\Ey[']}} \times \sizesubstx{\val_1}{\val_1'} + 1 \\
+ \leq\; &\sizeRHS{\Ap}{\Ap'} + \\ 
+        &\sizeRHS{\A_1}{\A_1'} + \\
+        &\sizeRHS{\A_2}{\A_2'} + \\
+        &\sizeRHS{\inAm{\Ey}}{\inAm[']{\Ey[']}} + \\
+        &\numfvy{\inAm[']{\Ey[']}} \times (\sizeRHS{\val_1}{\val_1'}) + 1 \\
+    =\; &\sizeRHS{\Ap}{\Ap'} + \\
+        &\sizeRHS{\A_1}{\A_1'} + \\
+        &\sizeRHS{\A_2}{\A_2'} + \\
+        &\sizeRHS{\inAm{\Ey}}{\inAm[']{\Ey[']}} + \\
+        &\numfvy{\inAm[']{\Ey[']}} \times \size{\val_1 \pstep \val_1'} + 
+         \numfvy{\inAm[']{\Ey[']}} \times \numfvx{\val_1'} \times
+         \size{\val \pstep \val'} + 1 \\
+    =\; &\size{\Ap\pstep\Ap'} + \size{\A_1\pstep\A_1'} + \size{\A_2\pstep\A_2'}+
+         \size{\inAm{\Ey}\pstep\inAm[']{\Ey[']}} + 
+         \numfvy{\inAm[']{\Ey[']}} \times \size{\val_1 \pstep \val_1'} + 1 + \\
+         &(\numfvx{\Ap'}+\numfvx{\A_1'}+\numfvx{\A_2'}+
+          \numfvx{\inAm[']{\Ey[']}}+
+          \numfvy{\inAm[']{\Ey[']}} \times \numfvx{\val_1'}) 
+         \times \size{\val \pstep \val'} \\
+    =\; & \size{\e \pstep \e'} + \numfvx{\e'} \times \size{\val \pstep \val'}
+  \end{align*}
+  \case{\e = \ap{\e_1}{\e_2}} Same reasoning as redex book.
+  \case{\e = \lx\e_1} Same reasoning as redex book.
+\end{byCases}
+\end{proof}
+
+
+
+
+
+
+\pagebreak
+
+
+
+
+\begin{lemma}[Unique Decomposition]
+  For all terms $\e$ and variables $x$, if $\e \neq \Ex[']$, $x$ not bound by
+  $\E'$, then $\e$ is either an answer $\Av$, or there exists a unique
+  evaluation context $\E$ and \betaneednr redex $\e'$ such that $\e =
+  \inE{\e'}$.
+\end{lemma}
+%
+\begin{proof}
+  By structural induction on $\e$.
+\begin{byCases}
+  %
+  % case 1: e = x
+  %
+  \case{\e = x} Impossible because $\e = \Ex$, $\E = \hole$
+  %
+  % case 2: e = \x.e
+  %
+  \case{\e = \lxe_1} 
+  Claim holds with $\e$ an answer, $\A = \hole$, $\val = \e$.
+  %
+  % case 3: e =  e e
+  %
+  \case{\e = \ap{\e_1}{\e_2}}
+  $\e_1 \neq \Ex['']$, otherwise, $\e = \Ex[']$, where $\E' = \ap{\E''}{\e_2}$.
+  By IH, $\e_1$ is either an answer or uniquely decomposes, so
+  proceed by subcases on $\e_1$.
+  \begin{byCases}
+    \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}  
+    %
+    % subcase 1: e_1 = E[e]
+    %
+    \case{\e_1 = \inE[_1]{\e_3}}
+    By IH, $\e_3$ is a \betaneednr redex. Then the claim holds with 
+    $\E = \ap{\E_1}{\e_2}$ and $\e' = \e_3$.
+    %
+    % subcase 2: e_1 = A[v]
+    %
+    \case{\e_1 = \inA[_1]{\val_1}}
+    Let $\val_1 = \lxe_3$. Proceed by subsubcases on $\e_3$.
+    \begin{byCases}
+      \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubcase {#1}.}}
+      %
+      % subsubcase 1: e_3 = E[y]
+      %
+      \case{\e_3 = \Ey[_1]} 
+      where $y$ is a variable bound by the answer context
+      $\ap{\inA[_1]{\lx\hole}}{\e_2}$.
+      Proceed by subsubsubcases on $\e_2$
+      \begin{byCases}
+        \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subsubsubcase {#1}.}}
+        \case{\e_2 = \inE[_2]{\e_4}}
+        $\e_4$ is a \betaneednr redex. Then the claim holds with 
+        $\E = \ap{\inA[_1]{\lx\Ey[_1]}}{\E_2}$ and $\e' = \e_4$.
+        \case{\e_2 = \inA[_2]{\val_2}}
+        Then $\e$ is a \betaneednr redex.
+      \end{byCases}
+      %
+      % subsubcase 1: e_3 \neq E[y] = E[e]
+      %
+      \case{\e_3 \neq \Ey[_1] = \inE[_2]{\e_4}}
+      $\e_4$ is a \betaneednr redex. 
+      Claim holds with $\E = \ap{\inA[_1]{\lx\inE[_2]{\,\,\,}}}{\e_2}$ and 
+      $\e' = \e_4$.
+      %
+      % subsubcase 1: e_3 \neq E[y] = A[v]
+      %
+      \case{\e_3 \neq \Ey[_1] = \inA[_2]{\val_2}}
+      Claim holds where $\e$ is an answer with 
+      $\A = \ap{\inA[_1]{\lx\inA[_2]{\,\,\,}}}{\e_2}$ and $\val = \val_2$
+    \end{byCases}
+  \end{byCases}
+\end{byCases}
+\end{proof}
+
+\end{document}

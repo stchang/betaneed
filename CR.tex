@@ -1,0 +1,257 @@
+\documentclass{article}
+
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{betaneed}
+\usepackage{pfsteps}
+
+\begin{document}
+
+\subsubsection*{Syntax}
+\begin{align*}
+  \tag{Expressions}
+  \e   &= x \mid \lxe \mid \ap{\e}{\e} \\
+  \tag{Values}
+  \val &= \lxe \\
+  \tag{Answers}
+  \ans &= \Av \\
+  \tag{Answer Contexts}
+  \A   &= \hole \mid \app{\lx{\A}}{\e} \\
+  \tag{Evaluation Contexts}
+  \E   &= \hole \mid \ap{\E}{\e} \mid \app{\lxEx}{\E} \mid \app{\lx{\E}}{\e}
+\end{align*}
+
+\subsubsection*{Notions of Reduction}
+\begin{align*}
+\nr{ \app{\lxEx}{\val} }
+   { \betaneednr }
+   { \substx{\Ex}{\val} } \\
+\nr{ \app{\lxAv}{\ap{\e}{\e'}} }
+   { \assocLnr }
+   { \app{\lx{\inA{\ap{\val}{\e'}}}}{\e} } \\
+\nr{ \appp{\lxEx}{\app{\lm{y}{\Av}}{\e}} }
+   { \assocRnr }
+   { \app{\lm{y}{\inA{\app{\lxEx}{\val}}}}{\e} }
+\end{align*}
+
+\begin{align*}
+\need  &= \betaneednr \cup \assocLnr \cup \assocRnr \\
+\step  &: \textrm{compatible closure of } \need \\
+\steps &: \textrm{reflexive, transitive closure of } \step \\
+\pstep &: \textrm{parallel extension of } \step \\
+\end{align*}
+
+\begin{definition}[$\pstep$]
+Parallel reduction of all non-overlapping redexes.
+
+\begin{tabular}{rcllc}
+\psteprulenoif
+  { \e }{ \e }
+\psteprule
+  { \app{\lxEx}{\val} }{ \substx{\Ex[']}{\val'} }
+  { \Ex \pstep \Ex['],\; \val \pstep \val' }
+\psteprule
+  { \ap{\app{\lxAv}{\e_1}}{\e_2} }
+  { \app{\lx{\inA[']{\ap{\val'}{\e_2'}}}}{\e_1'} }
+  { \Av \pstep \inA[']{\val'},\; \e_1 \pstep \e_1',\; \e_2 \pstep \e_2' }
+\psteprule
+  { \appp{\lxEx}{\app{\lyAv}{\e}} }
+  { \app{\ly{\inA[']{\app{\lxEx[']}{\val'}}}}{\e'} }
+  { \Ex \pstep \Ex['],\; \Av \pstep \inA[']{\val'},\;  \e \pstep \e' }
+\psteprule
+  { \ap{\e_1}{\e_2} }{ \ap{\e_1'}{\e_2'} }
+  { \e_1 \pstep \e_1',\; \e_2 \pstep \e_2' }
+\psteprule
+  { \lxe }{ \lxe' }
+  { \e \pstep \e' }
+\end{tabular}
+\end{definition}
+
+\begin{theorem}[Church-Rosser]
+If $\e \steps \e_1$ and $\e \steps \e_2$, $\exists \e'$ s.t. $\e_1 \steps \e'$
+and $\e_2 \steps \e'$.
+\end{theorem}
+
+\begin{proof}
+Use Diamond Property of $\pstep$.
+\end{proof}
+
+\begin{lemma}[Diamond Property of $\pstep$]
+If $\e \pstep \e_1$ and $\e \pstep \e_2$, $\exists \e'$ s.t. $\e_1 \pstep \e'$
+and $\e_2 \pstep \e'$.
+\end{lemma}
+
+\begin{proof}
+By structural induction on proof of $\e \pstep \e_1$. All cases make use of
+lemmas \ref{lem:eclosed} and \ref{lem:aclosed}.
+\begin{byCases}
+  %
+  % pstep def #1
+  \case[(base)]{\e = \e_1} Then $\e_1 \pstep \e_2$, so $\e' = \e_2$.
+  %
+  % pstep def #2
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(2)}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(2)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by substitution lemma
+      \item $\e_2 \pstep \e'$ by substitution lemma
+    \end{itemize}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(5)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by substitution lemma
+      \item $\e_2 \pstep \e'$ by $\pstep def(2)$
+    \end{itemize}
+  \end{byCases}
+  %
+  %pstep def #3
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(3)}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(3)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by $\pstep def(5)$
+      \item $\e_2 \pstep \e'$ by $\pstep def(5)$
+    \end{itemize}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(5)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by $\pstep def(5)$
+      \item $\e_2 \pstep \e'$ by $\pstep def(3)$
+    \end{itemize}
+  \end{byCases}  
+  %
+  %pstep def #4
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(4)}
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Subcase {#1}.}}
+  \begin{byCases}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(4)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by $\pstep def(5)$
+      \item $\e_2 \pstep \e'$ by $\pstep def(5)$
+    \end{itemize}
+    \case{\e \pstep \e_2 \textrm{ by } \pstep def(5)}
+    \begin{itemize}
+      \item $\e_1 \pstep \e'$ by $\pstep def(5)$
+      \item $\e_2 \pstep \e'$ by $\pstep def(4)$
+    \end{itemize}
+  \end{byCases}  
+  %
+  %pstep def #5
+  \renewcommand{\byCasesCaseTemplate}[1]{\textbf{Case {#1}.}}
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(5)}
+  $\e \pstep \e_2$ subcases by $\pstep def(2),(3),(4),(5)$, 
+  analogous to above cases.
+  %
+  %pstep def #6
+  \case{\e \pstep \e_1 \textrm{ by } \pstep def(6)}
+  Claim holds by IH.
+\end{byCases}
+\end{proof}
+
+\begin{lemma}[$\Ex$ closed under $\pstep$]
+\label{lem:eclosed}
+If $\e = \Ex$, $x \in fv(\Ex)$, and $\e \pstep \e'$, then for some $\E'$, $\e'
+= \Ex[']$, $x \in fv(\Ex['])$.
+\end{lemma}
+
+\begin{proof}
+Structural induction on $\E$.
+\begin{byCases}
+  \case{\E = \hole} $\e = \e' = x$, $\E' = \hole$.
+  \case{\E = \ap{\E_1}{\e_1}}
+  IH: $\Ex[_1] \pstep \Ex[_1']$, 
+  so $\ap{\Ex[_1]}{\e_1} \pstep \ap{\Ex[_1']}{\e_1'}$. \\
+  $\ap{\Ex[_1']}{\e_1'}$ is not $\need$ redex bc $\Ex[_1'] \notin \val$,
+  by lemma 4,
+  so $\E' = \ap{\E_1'}{\e_1'}$, 
+  \case{\E = \app{\lyEy[_2]}{\E_1}}
+  IH: $\Ey[_2] \pstep \Ey[_2']$, $\Ex[_1] \pstep \Ex[_1']$, 
+  so $\app{\lyEy[_2]}{\Ex[_1]} \pstep \app{\lyEy[_2']}{\Ex[_1']}$. \\
+  % 1) 
+  $\app{\lyEy[_2']}{\Ex[_1']}$ is not $\betaneednr$ redex 
+  bc $\Ex[_1'] \notin \val$, by lemma 4. \\
+  % 2) 
+  $\app{\lyEy[_2']}{\Ex[_1']}$ is not $\assocLnr$ redex 
+  bc $\Ey[_2'] \notin \ans$, by lemma 4. \\
+  % 3) 
+  $\app{\lyEy[_2']}{\Ex[_1']}$ is not $\assocRnr$ redex 
+  bc $\Ex[_1'] \notin \ans$, by lemma 4. \\
+  so $\E' = \app{\lyEy[_2']}{\E_1'}$,
+  \case{\E = \app{\ly{\E_1}}{\e_1}}
+  IH: $\Ex[_1] \pstep \Ex[_1']$, 
+  so $\app{\ly{\Ex[_1]}}{\e_1} \pstep \app{\ly{\Ex[_1']}}{\e_1'}$ \\
+  % 1) 
+  $\app{\ly{\Ex[_1']}}{\e_1'}$ is not $\betaneednr$ redex
+  bc $\Ex[_1'] \neq \Ey[_2]$. \\
+  % 2) 
+  $\app{\ly{\Ex[_1']}}{\e_1'}$ is not $\assocLnr$ redex 
+  bc $\Ex[_1'] \notin \ans$, by lemma 4. \\
+  % 3) 
+  $\app{\ly{\Ex[_1']}}{\e_1'}$ is not $\assocRnr$ redex 
+  bc $\Ex[_1'] \neq \Ey[_2]$. \\
+  so $\E' = \app{\ly{\E_1'}}{\e_1'}$,
+\end{byCases}
+\end{proof}
+
+\begin{lemma}[$\Av$ closed under $\pstep$]
+\label{lem:aclosed}
+If $\e = \Av$ and $\e \pstep \e'$, then $\e' = \inA[']{\val'}$.
+\end{lemma}
+
+\begin{proof}
+Structural induction on $\A$.
+\begin{byCases}
+  \case{\A = \hole} $\e' = \val'$
+  \case{\A = \app{\lx{\A_1}}{\e_1}}
+  IH: $\Av[_1] \pstep \inA[_1']{\val'}$, 
+  so $\app{\lx{\Av[_1]}}{\e_1} \pstep \app{\lx{\inA[_1']{\val'}}}{\e_1'}$. \\
+  % 1) 
+  $\app{\lx{\inA[_1']{\val'}}}{\e_1'}$ is not $\betaneednr$ redex
+  bc $\inA[_1']{\val'} \neq \Ex$, by lemma 5. \\
+  % 2) 
+  $\app{\lx{\inA[_1']{\val'}}}{\e_1'}$ is not $\assocLnr$ redex 
+  bc  $\e$ was not. \\
+  % 3) 
+  $\app{\lx{\inA[_1']{\val'}}}{\e_1'}$ is not $\assocRnr$ redex 
+  bc $\inA[_1']{\val'} \neq \Ex$, by lemma 5. \\
+  so $\e' = \app{\lx{\inA[_1']{\val'}}}{\e_1'}$,
+\end{byCases}
+\end{proof}
+
+\begin{lemma}
+If $\e = \Ex$, $\e \notin \ans$.
+\end{lemma}
+
+\begin{proof}
+By structural induction on $E$.
+\begin{byCases}
+  \case{\E = \hole}
+  \case{\E = \ap{\E_1}{\e_1}}
+  IH: $\Ex[_1] \notin \ans$, so $\Ex[_1]$ is not a $\lambda$.
+  \case{\E = \app{\lyEy[_2]}{\E_1}}
+  IH: $\Ey[_2] \notin \ans$, $\Ex[_1] \notin \ans$,
+  \case{\E = \app{\ly{\E_1}}{\e_1}}
+  IH: $\Ex[_1] \notin \ans$
+\end{byCases}
+\end{proof}
+
+\begin{lemma}
+If $\e = \ans$, then $\not\exists E$ s.t. $\e = \Ex$.
+\end{lemma}
+
+\begin{lemma}
+If $\e = \Ex$, $x \in fv(\Ex)$, $\not\exists \E', y \neq x$, $y \in fv(\E')$
+s.t. $\e = \Ey[']$.
+\end{lemma}
+
+\begin{lemma}
+If $\e = \Ex$, $x \in fv(\Ex)$, $\Ex$ is not a $\need$ redex.
+\end{lemma}
+
+
+
+\end{document}

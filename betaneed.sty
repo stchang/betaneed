@@ -1,0 +1,206 @@
+\usepackage{xspace}
+\usepackage{pfsteps}
+\usepackage{accents}
+
+% syntax
+
+\newcommand{\e}{e}
+\newcommand{\es}[2]{\e_{#1}\ldots\e_{#2}}
+\newcounter{e}
+\setcounter{e}{2}
+\newcommand{\resete}{\setcounter{e}{2}}
+\newcommand{\newe}[1]{
+  \stepcounter{e}
+  \@ifundefined{#1}
+      {\expandafter\newcommand\csname#1\endcsname{\e_{\arabic{e}}}}
+    {\expandafter\renewcommand\csname#1\endcsname{\e_{\arabic{e}}}}}
+\newcommand{\val}{v}
+\newcommand{\ans}{a}
+\newcommand{\A}{A}
+\newcommand{\inA}[2][]{\inhole{\A#1}{#2}}
+\newcommand{\Av}[1][]{\inA[#1]{\val}}
+%\newcommand{\Av}[1][]{\inhole{\A#1}{\val}}
+\newcommand{\Ap}{\accentset{\wedge}{\A}}
+\newcommand{\inAp}[2][]{\inhole{\Ap#1}{#2}}
+\newcommand{\Am}{\accentset{\vee}{\A}}
+\newcommand{\inAm}[2][]{\inhole{\Am#1}{#2}}
+\newcommand{\E}{E}
+\newcommand{\inE}[2][]{\inhole{\E#1}{#2}}
+\newcommand{\Ex}[1][]{\inE[#1]{x}}
+\newcommand{\Ey}[1][]{\inE[#1]{y}}
+%\newcommand{\Ex}[1][]{\inhole{\E#1}{x}}
+\newcommand{\lm}[1]{\lambda#1.}
+\newcommand{\lx}[1][]{\lm{x_{#1}}}
+\newcommand{\lxs}[2]{\lx[_{#1}]\ldots\lx[_{#2}]}
+\newcommand{\ly}[1][]{\lm{y_{#1}}}
+\newcommand{\lz}[1][]{\lm{z_{#1}}}
+\newcommand{\lxe}{\lx{\e}}
+\newcommand{\lye}{\ly{\e}}
+\newcommand{\lxEx}[1][]{\lx{\Ex[#1]}}
+\newcommand{\lyEy}[1][]{\ly{\Ey[#1]}}
+\newcommand{\lxAv}[1][]{\lx{\Av[#1]}}
+\newcommand{\lyAv}[1][]{\ly{\Av[#1]}}
+%% \newcommand{\lmp}[2]{(\lm{#1}{#2})}
+%% \newcommand{\lxp}[1]{\lmp{x}{#1}}
+%% \newcommand{\lxep}{\lxp{\e}}
+%% \newcommand{\lxExp}[1][]{\lxp{\Ex[#1]}}
+%% \newcommand{\lxAvp}[1][]{\lxp{\Av[#1]}}
+\newcommand{\ap}[2]{#1\,#2}            % e e
+\newcommand{\app}[2]{\ap{(#1)}{#2}}    % (e) e
+\newcommand{\appp}[2]{\ap{(#1)}{(#2)}} % (e) (e)
+\newcommand{\apppp}[2]{(\ap{#1}{#2})}  % (e e)
+\newcommand{\inhole}[2]{#1[#2]}
+\newcommand{\hole}{\inhole{}{\,}}
+\newcommand{\C}{C}
+\newcommand{\inC}[2][]{\inhole{\C#1}{#2}}
+\newcommand{\Cx}[1][]{\inC[#1]{x}}
+\newcommand{\lxCx}[1][]{\lx{\Cx[#1]}}
+\newcommand{\D}{D}
+\newcommand{\inD}[2][]{\inhole{\D#1}{#2}}
+
+% AF calculus contexts
+\newcommand{\Eaf}{E_{af}}
+\newcommand{\inEaf}[2][]{\inhole{\Eaf#1}{#2}}
+\newcommand{\Eafx}[1][]{\inEaf[#1]{x}}
+\newcommand{\Eafy}[1][]{\inEaf[#1]{y}}
+%\newcommand{\Eafx}[1][]{\inhole{\E#1}{x}}
+\newcommand{\ansaf}{a_{af}}
+\newcommand{\Aaf}{A_{af}}
+\newcommand{\inAaf}[2][]{\inhole{\Aaf#1}{#2}}
+\newcommand{\Aafv}[1][]{\inAaf[#1]{\val}}
+\newcommand{\lxEafx}[1][]{\lx{\Eafx[#1]}}
+\newcommand{\lyEafy}[1][]{\ly{\Eafy[#1]}}
+\newcommand{\lxAafv}[1][]{\lx{\Aafv[#1]}}
+\newcommand{\lyAafv}[1][]{\ly{\Aafv[#1]}}
+\newcommand{\valaf}{\val_{af}}
+
+% MOW calculus
+\newcommand{\valmow}{\val_{mow}}
+
+% Syntax: Stepper
+\newcommand{\stepe}{c}
+\newcommand{\lab}[2]{#2^{#1}}
+\newcommand{\labxe}{\stepe^x}
+\newcommand{\labx}[1]{#1^x}
+
+% Syntax: Frames
+\newcommand{\mkFlst}[1]{[\![#1]\!]}
+\newcommand{\F}{F}
+\newcommand{\Fs}[1][]{\F#1,\ldots}
+\newcommand{\Fss}[1][]{\mkFlst{\Fs[#1]}}
+\newcommand{\consFs}[2][]{#2,\Fs[#1]}
+\newcommand{\consFss}[2][]{\mkFlst{#2,\Fs[#1]}}
+\newcommand{\appendFs}[2]{#1,#2}
+\newcommand{\appendFss}[2]{\mkFlst{#1,#2}}
+\newcommand{\mt}{\texttt{mt}}
+\newcommand{\mtFss}{\mkFlst{\mt}}
+\newcommand{\argF}[1]{(\texttt{arg}\; #1)}
+\newcommand{\argFe}[1][]{\argF{\e#1}}
+\newcommand{\lmF}[1]{(\texttt{lam}\; #1)}
+\newcommand{\lxF}{\lmF{x}}
+\newcommand{\bodyF}[3]{(\texttt{body}\;#1\;#2\;#3)}
+\newcommand{\bodyFx}[2]{\bodyF{x}{#1}{#2}}
+
+% Syntax: CK machine states:
+\newcommand{\St}{S}
+\newcommand{\ck}[2]{\left\langle #1,\;#2\right\rangle}
+\newcommand{\ckeFs}{\ck{\e}{\Fss}}
+\newcommand{\ckFs}[1]{\ck{#1}{\Fss}}
+\newcommand{\cke}[2][]{\ck{\e#1}{#2}}
+
+
+
+% reductions
+
+% notions of reduction
+\newcommand{\nr}[3]{ #1 \;\;\; &#2 \;\;\; #3 }
+\newcommand{\betaneednr}{\ensuremath{\mathop{\boldsymbol{\beta}_{\mathbf{need}}}}\xspace}
+\newcommand{\betanr}{\ensuremath{\boldsymbol{\beta}}\xspace}
+\newcommand{\betaneednrr}[1][']{\ensuremath{\mathop{\beta_{need}#1}}\xspace}
+\newcommand{\assocnr}{\textit{assoc}\xspace}
+\newcommand{\assocLnr}{\textbf{assoc-L}}
+\newcommand{\assocRnr}{\textbf{assoc-R}}
+\newcommand{\derefnr}{\textit{deref}\xspace}
+\newcommand{\liftnr}{\textit{lift}\xspace}
+\newcommand{\need}{\mathop{\textbf{need}}}
+\newcommand{\Inr}{\textit{(I)}\xspace}
+\newcommand{\Vnr}{\textit{(V)}\xspace}
+\newcommand{\Cnr}{\textit{(C)}\xspace}
+\newcommand{\Anr}{\textit{(A)}\xspace}
+\newcommand{\Gnr}{\textit{(G)}\xspace}
+
+% reductions
+\newcommand{\step}{\rightarrow}  % →
+\newcommand{\steps}{\rightarrow\hspace{-8pt}\rightarrow}
+\newcommand{\pstep}{\Rightarrow} % ⇒
+\newcommand{\srstep}{\longmapsto}    % ↦
+\newcommand{\doublelongmapsto}
+           {\hspace{4pt}\rightarrow\hspace{-13pt}\longmapsto}{
+\newcommand{\srsteps}{\doublelongmapsto}
+\newcommand{\srseqop}{\diamond}
+\newcommand{\srseqset}{\mathcal{R}}
+\newcommand{\srseq}[2]{#1\srseqop\cdots\srseqop#2\in\srseqset}
+\newcommand{\srseqappend}[2]{#1\srseqop\cdots\srseqop#2\srseqop}
+\newcommand{\srseqcons}[2][]{#2#1\srseqop}
+\newcommand{\srseqconse}[1][]{\srseqcons{e#1}}
+\newcommand{\srseqe}[2][]{\srseq{\e_1#1}{\e_{#2}#1}}
+\newcommand{\ckstep}{\longmapsto_{ck}}
+\newcommand{\cksteps}{\doublelongmapsto_{ck}}
+
+
+% metafns
+
+\newcommand{\subst}[3]{#1\{#2 := #3\}}
+\newcommand{\substx}[3][]{\subst{#2}{x_{#1}}{#3}}
+\newcommand{\substy}[3][]{\subst{#2}{y_{#1}}{#3}}
+\newcommand{\size}[1]{|#1|}
+\newcommand{\numfv}[2]{\#(#1,#2)}
+\newcommand{\numfvx}[1]{\numfv{x}{#1}}
+\newcommand{\numfvy}[1]{\numfv{y}{#1}}
+\newcommand{\balanced}[1]{balanced(#1)}
+\newcommand{\balancedd}[3]{balanced\_(#1 \, #2 \, #3)}
+
+% ck machine metafns
+\newcommand{\build}[1]{\phi(#1)}
+\newcommand{\buildF}[1]{\phi_\F(#1)}
+\newcommand{\buildFhelp}[2]{\phi'_\F(#1,\;#2)}
+\newcommand{\buildFhelpLHS}[1]{\buildFhelp{\consFss{#1}}{\C}}
+\newcommand{\buildFhelpRHS}[1]{\buildFhelp{\Fss}{#1}}
+
+\newcommand{\buildtostep}[1]{\psi(#1)}
+\newcommand{\buildtostepp}[2]{\psi'(#1,\;#2)}
+
+% misc
+\newcommand{\where}[1]{\textrm{ where } #1}
+\newcommand{\whereand}[1]{\textrm{ and } #1}
+
+
+% Theorem environments
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+%\newtheorem{proof}{Proof}
+%\newtheorem{property}{Property}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+
+% rule formatting
+\newcounter{pstep}
+%\newcommand{\incpstepcount}{\addtocounter{pstep}{1}}
+%\incpstepcount
+\stepcounter{pstep}
+\newcommand{\psteprule}[3]
+     {$#1$ & $\pstep$ & $#2$ & if $#3$ & (\arabic{pstep})\stepcounter{pstep} \\}
+\newcommand{\psteprulenoif}[2]
+             {$#1$ & $\pstep$ & $#2$ & & (\arabic{pstep})\stepcounter{pstep} \\}
+
+\newcommand{\tkzsc}{0.7}
+
+
+
+% POPL 2012 paper macros
+\newcommand{\lc}{\ensuremath{\lambda}-calculus\xspace}
+\newcommand{\lmow}{\ensuremath{\lambda_{mow}}\xspace}
+\newcommand{\laf}{\ensuremath{\lambda_{af}}\xspace}
+\newcommand{\lneed}{\ensuremath{\lambda_{need}}\xspace}
+
+\newcommand{\lamarg}{lambda-argument\xspace}
